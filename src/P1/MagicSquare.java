@@ -197,6 +197,40 @@ public class MagicSquare {
         return checker.check();
     }
 
+    /**
+     * 指导手册中的代码，在标准输出中打印一个magic square
+     *
+     * @param n 方阵的大小，必须为奇数
+     */
+    public static boolean generateMagicSquare(int n) {
+        int[][] magic = new int[n][n];
+        int row = 0, col = n / 2, i, j, square = n * n;
+        for (i = 1; i <= square; i++) {
+            magic[row][col] = i;
+            if (i % n == 0)
+                row++;
+            else {
+                if (row == 0)
+                    row = n - 1;
+                else
+                    row--;
+                if (col == (n - 1))
+                    col = 0;
+                else
+                    col++;
+            }
+        }
+
+        // 输出magic square
+        for (i = 0; i < n; i++) {
+            for (j = 0; j < n; j++)
+                System.out.print(magic[i][j] + "\t");
+            System.out.println();
+        }
+
+        return true;
+    }
+
     public static void main(String[] args) {
         System.out.println("------------------ Request 1 ------------------");
 
