@@ -196,7 +196,7 @@ public class MagicSquare {
     }
 
     /**
-     * 指导手册中的代码，在标准输出中打印一个magic square
+     * 指导手册中的代码，利用De la Loubère构造方法生成一个magic square，并打印至writer中
      *
      * @param n      方阵的大小，必须为奇数
      * @param writer 输出流
@@ -210,17 +210,21 @@ public class MagicSquare {
             return false;
         }
 
-        int[][] magic = new int[n][n];
-        int row = 0, col = n / 2, i, j, square = n * n;
-        for (i = 1; i <= square; i++) {
+        int[][] magic = new int[n][n]; // 存储幻方的二维数组
+        int row = 0, col = n / 2;      // 下一个放置的下标，初始将1放置在最上行的中间
+        int square = n * n;            // 幻方中最大的数，n^2
+        for (int i = 1; i <= square; i++) { // 每轮循环放置1个数，然后将row、col，直至放满
             magic[row][col] = i;
-            if (i % n == 0)
+            if (i % n == 0) // 每填入n个数时，右上角将有数，需要向下移动一格，继续填入
                 row++;
-            else {
-                if (row == 0)
+            else { // 向右向上各移动一格（假想为上下相接，左右相接）
+                // 向“上”移动
+                if (row == 0) // 已到达最上行，其上面的行是最下行
                     row = n - 1;
-                else
+                else // 直接向上移动即可
                     row--;
+
+                // 同理向“右”移动
                 if (col == (n - 1))
                     col = 0;
                 else
@@ -229,8 +233,8 @@ public class MagicSquare {
         }
 
         // 输出magic square
-        for (i = 0; i < n; i++) {
-            for (j = 0; j < n; j++)
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++)
                 writer.print(magic[i][j] + "\t");
             writer.println();
         }
