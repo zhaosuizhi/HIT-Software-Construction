@@ -2,9 +2,7 @@ package P1;
 
 import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -200,9 +198,18 @@ public class MagicSquare {
     /**
      * 指导手册中的代码，在标准输出中打印一个magic square
      *
-     * @param n 方阵的大小，必须为奇数
+     * @param n      方阵的大小，必须为奇数
+     * @param writer 输出流
      */
-    public static boolean generateMagicSquare(int n) {
+    public static boolean generateMagicSquare(int n, PrintStream writer) {
+        if (n % 2 == 0) {
+            writer.printf("The input \"n\" has to be even! (yours: %d)\n", n);
+            return false;
+        } else if (n <= 0) {
+            writer.printf("The input \"n\" has to be bigger than 0! (yours: %d)\n", n);
+            return false;
+        }
+
         int[][] magic = new int[n][n];
         int row = 0, col = n / 2, i, j, square = n * n;
         for (i = 1; i <= square; i++) {
@@ -224,8 +231,8 @@ public class MagicSquare {
         // 输出magic square
         for (i = 0; i < n; i++) {
             for (j = 0; j < n; j++)
-                System.out.print(magic[i][j] + "\t");
-            System.out.println();
+                writer.print(magic[i][j] + "\t");
+            writer.println();
         }
 
         return true;
@@ -253,6 +260,34 @@ public class MagicSquare {
             } catch (FileNotFoundException | ValueException e) {
                 System.out.println(e.getMessage());
             }
+        }
+
+        System.out.println();
+        System.out.println("------------------ Request 2 ------------------");
+        System.out.println("Testing generateMagicSquare function...");
+        PrintStream out = new PrintStream(System.out);
+        generateMagicSquare(5, out);
+        generateMagicSquare(6, out);
+        generateMagicSquare(0, out);
+        generateMagicSquare(-1, out);
+        System.out.println();
+
+        String outputFile = "src/P1/txt/6.txt";
+        System.out.println("Generating a square to \"" + outputFile + "\"...");
+        try {
+            OutputStream f = new FileOutputStream(outputFile);
+            out = new PrintStream(f);
+
+            generateMagicSquare(5, out);
+
+            System.out.println("Checking \"" + outputFile + "\"...");
+            if (isLegalMagicSquare(outputFile))
+                System.out.println("Correct!");
+            else
+                System.out.println("Wrong!");
+
+        } catch (FileNotFoundException e) {
+            System.out.println("Can't open \"" + outputFile + "\"!");
         }
     }
 }
