@@ -3,9 +3,117 @@
  */
 package P2.turtle;
 
-import java.util.List;
-import java.util.Set;
-import java.util.ArrayList;
+import java.util.*;
+
+/**
+ * 链表
+ */
+class Node {
+    private final Point point;
+    private Node next;
+
+    public Node(Point point) {
+        this.point = point;
+        this.next = null;
+    }
+
+    public Node(Point point, Node next) {
+        this.point = point;
+        this.next = next;
+    }
+
+    public Point getPoint() {
+        return point;
+    }
+
+    /**
+     * 获取下一节点
+     *
+     * @return 下一节点
+     */
+    public Node getNext() {
+        return next;
+    }
+
+    /**
+     * 设置下一节点
+     *
+     * @param next 下一节点
+     */
+    public void setNext(Node next) {
+        this.next = next;
+    }
+
+    /**
+     * 计算该链表的长度（包括头节点！）
+     *
+     * @return 链表长度
+     */
+    public int getLength() {
+        int count = 0;
+        for (Node node = this; node != null; node = node.next) {
+            count++;
+        }
+        return count;
+    }
+
+    /**
+     * 在当前链表最后新增节点
+     *
+     * @param point 新增的点
+     */
+    public void add(Point point) {
+        Node node = this;
+        while (node.next != null) // 找到当前链表的尾节点
+            node = node.next;
+        node.next = new Node(point); // 新建节点加在最后
+    }
+
+    /**
+     * 删除该节点的下一个节点
+     */
+    public void deleteNext() {
+        if (this.next == null)
+            throw new NullPointerException("Next node is null!");
+        this.next = this.next.next;
+    }
+
+    /**
+     * 通过简单的几何关系判断三点是否在一线上
+     *
+     * @param n1 第一个点
+     * @param n2 第二个的
+     * @param n3 第三个点
+     * @return 给定的三点是否在同一直线上
+     */
+    public static boolean threeInOneLine(Node n1, Node n2, Node n3) {
+        Point p1, p2, p3;
+        p1 = n1.point;
+        p2 = n2.point;
+        p3 = n3.point;
+
+        double a = p1.x() - p2.x();
+        double b = p1.y() - p2.y();
+        double c = p1.x() - p3.x();
+        double d = p1.y() - p3.y();
+        return Double.doubleToLongBits(a * d) == Double.doubleToLongBits(b * c);
+    }
+
+    /**
+     * 当前节点、下一节点、下下节点在同一条线上
+     */
+    public boolean nextThreeInOneLine() {
+        Node n1, n2;
+        n1 = next;
+        if (n1 == null)
+            throw new NullPointerException("The next node is null!");
+        n2 = n1.next;
+        if (n2 == null)
+            throw new NullPointerException("The 2nd next node is null!");
+
+        return threeInOneLine(this, n1, n2);
+    }
+}
 
 public class TurtleSoup {
 
@@ -122,6 +230,18 @@ public class TurtleSoup {
     }
 
     /**
+     * Counter Clock Wise 以逆时针方向旋转
+     *
+     * @param a 起点
+     * @param b 中间点
+     * @param c 终点
+     * @return a, b, c是否满足CCW
+     */
+    private static boolean CCW(Point a, Point b, Point c) {
+        return ((c.x() - a.x()) * (b.y() - a.y()) - (c.y() - a.y()) * (b.x() - a.x())) < 0;
+    }
+
+    /**
      * Given a set of points, compute the convex hull, the smallest convex set that contains all the points
      * in a set of input points. The gift-wrapping algorithm is one simple approach to this problem, and
      * there are other algorithms too.
@@ -130,7 +250,74 @@ public class TurtleSoup {
      * @return minimal subset of the input points that form the vertices of the perimeter of the convex hull
      */
     public static Set<Point> convexHull(Set<Point> points) {
-        throw new RuntimeException("implement me!");
+        int n = points.size(); // 点的个数
+        if (n == 0) // 输入为空，直接返回
+            return new HashSet<>();
+
+        // 将输入转换为数组，便于计算
+        Point[] pointArray = new Point[n];
+        int i = 0;
+        for (Point p : points) {
+            pointArray[i++] = p;
+        }
+
+        // 找到最左的点，以保证初始点在凸包上
+        int mostLeftP = 0; // 最左边的点的下标
+        for (i = 0; i < n; i++) {
+            if (pointArray[i].x() < pointArray[mostLeftP].x()
+                    || (pointArray[i].x() == pointArray[mostLeftP].x() && pointArray[i].y() < pointArray[mostLeftP].y())) {
+                mostLeftP = i;
+            }
+        }
+
+        Node convexHull = new Node(new Point(0, 0)); // 凸包链表，初始化头节点
+
+        int pA = mostLeftP; // index of Point on Hull
+        int pC; // index of endpoint
+        Node lastNode = convexHull; // 指向链表凸包尾
+        do {
+            lastNode.add(pointArray[pA]);
+            lastNode = lastNode.getNext();
+
+            pC = (pA + 1) % n;
+            for (i = 0; i < n; i++) {
+                if (pC == pA || CCW(pointArray[pA], pointArray[i], pointArray[pC])) {
+                    pC = i;
+                }
+            }
+            pA = pC;
+        } while (pA != mostLeftP);
+
+        // 此时凸包已生成
+        // 当凸包内点的个数≥4时，可能存在共线的点，将其去除
+        if (convexHull.getLength() > 3) {
+            Node node;
+            for (node = convexHull.getNext(); node.getNext() != null && node.getNext().getNext() != null; node = node.getNext()) {
+                if (node.nextThreeInOneLine())
+                    node.deleteNext();
+            }
+
+            // 此时node指向链表中的倒数第二个元素（下标-2）
+            // 接下来对下标为-2、-1、0及-1、0、1的节点判断是否共线
+            assert node.getNext() != null;
+            Node first = convexHull.getNext();
+            Node second = first.getNext();
+            if (Node.threeInOneLine(node, node.getNext(), first)) { // 判断-2、-1、0
+                node.deleteNext(); // -2、-1、0共线，删除最后一个节点
+                // 此时node是最后一个节点，因此无需get next
+            } else {
+                node = node.getNext(); // 让node指向最后一个节点
+            }
+            if (Node.threeInOneLine(node, first, second)) // 判断-1、0、1
+                node.deleteNext();
+        }
+
+        // 将自定义的链表转换为Set后返回
+        Set<Point> convexHullWithoutLine = new HashSet<Point>();
+        for (Node node = convexHull.getNext(); node != null; node = node.getNext()) {
+            convexHullWithoutLine.add(node.getPoint());
+        }
+        return convexHullWithoutLine;
     }
 
     /**
