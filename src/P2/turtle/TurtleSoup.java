@@ -86,7 +86,21 @@ public class TurtleSoup {
      */
     public static double calculateBearingToPoint(double currentBearing, int currentX, int currentY,
                                                  int targetX, int targetY) {
-        throw new RuntimeException("implement me!");
+        double absoluteBearing; // 相对于y轴的绝对角度
+        if (currentX == targetX) // 竖着走
+            absoluteBearing = targetY > currentY ? 0.0 : 270.0;
+        else if (currentY == targetY) // 横着走
+            absoluteBearing = targetX > currentX ? 90.0 : 270.0;
+        else { // 一般情况
+            double tan = (double) (targetX - currentX) / (double) (targetY - currentY);
+            absoluteBearing = Math.atan(tan);
+        }
+
+        double bearing = 360 - currentBearing + absoluteBearing; // 相对旋转角度
+        if (bearing >= 360)
+            bearing -= 360;
+        return bearing;
+//        throw new RuntimeException("implement me!");
     }
 
     /**
