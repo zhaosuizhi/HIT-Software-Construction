@@ -3,7 +3,9 @@
  */
 package P2.turtle;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * 链表
@@ -128,8 +130,6 @@ public class TurtleSoup {
             turtle.forward(100);
             turtle.turn(90);
         }
-
-//        throw new RuntimeException("implement me!");
     }
 
     /**
@@ -143,7 +143,6 @@ public class TurtleSoup {
      */
     public static double calculateRegularPolygonAngle(int sides) {
         return sides > 2 ? (sides - 2) * 180 / (float) sides : 0.0;
-//        throw new RuntimeException("implement me!");
     }
 
     /**
@@ -208,7 +207,6 @@ public class TurtleSoup {
         if (bearing >= 360)
             bearing -= 360;
         return bearing;
-//        throw new RuntimeException("implement me!");
     }
 
     /**
@@ -329,7 +327,16 @@ public class TurtleSoup {
      * @param turtle the turtle context
      */
     public static void drawPersonalArt(Turtle turtle) {
-        throw new RuntimeException("implement me!");
+        PenColor[] palette = {PenColor.RED, PenColor.GREEN, PenColor.BLUE, PenColor.ORANGE};
+        int length = 1;    // 初始长度
+        int delta = 2;     // 每次增加的长度
+        double angle = 91; // 旋转的角度
+
+        for (int i = 0; i < 360; i++) {
+            turtle.color(palette[i % palette.length]);
+            turtle.forward(length + i * delta);
+            turtle.turn(angle);
+        }
     }
 
     /**
@@ -339,10 +346,11 @@ public class TurtleSoup {
      *
      * @param args unused
      */
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         DrawableTurtle turtle = new DrawableTurtle();
 
-        drawSquare(turtle, 40);
+//        drawSquare(turtle, 40);
+        drawPersonalArt(turtle);
 
         // draw the window
         turtle.draw();
