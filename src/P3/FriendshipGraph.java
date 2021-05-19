@@ -15,7 +15,7 @@ public class FriendshipGraph {
     }
 
     /**
-     * 检查给定人物是否在关系图中
+     * 检查人物是否在关系图中
      *
      * @param person 人物
      * @return 是否在关系图中
@@ -55,7 +55,7 @@ public class FriendshipGraph {
     }
 
     /**
-     * 利用广度优先搜索查找from到to的社交距离
+     * 查找两人的社交距离
      *
      * @param from 源人物
      * @param to   目标人物
