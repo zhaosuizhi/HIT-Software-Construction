@@ -5,7 +5,7 @@ import java.security.KeyException;
 import java.util.*;
 
 public class FriendshipGraph {
-    private final HashMap<Person, Set<Person>> graph; // 关系有向图，以学生对象为键
+    private final HashMap<String, Set<String>> graph; // 关系有向图，以学生对象为键
 
     private static final String existMsgFormat = "Person \"%s\" already exists!";
     private static final String notFoundMsgFormat = "Person \"%s\" not found!";
@@ -15,13 +15,37 @@ public class FriendshipGraph {
     }
 
     /**
-     * 检查人物是否在关系图中
+     * 检查姓名是否在关系图中
      *
-     * @param person 人物
+     * @param name 姓名
      * @return 是否在关系图中
      */
-    private boolean personExist(Person person) {
-        return graph.get(person) != null;
+    private boolean personExist(String name) {
+        return graph.get(name) != null;
+    }
+
+    /**
+     * 检查姓名是否出现在关系图中
+     * 若没有，抛出KeyException错误
+     *
+     * @param name 姓名
+     */
+    private void existOrThrow(String name) throws KeyException {
+        if (!personExist(name)) {
+            throw new KeyException(String.format(notFoundMsgFormat, name));
+        }
+    }
+
+    /**
+     * 检查姓名是否出现在关系图中
+     * 若存在，抛出KeyAlreadyExistsException错误
+     *
+     * @param name 姓名
+     */
+    private void notExistOrThrow(String name) throws KeyAlreadyExistsException {
+        if (personExist(name)) {
+            throw new KeyAlreadyExistsException(String.format(existMsgFormat, name));
+        }
     }
 
     /**
@@ -30,28 +54,31 @@ public class FriendshipGraph {
      * @param person 人物对象
      */
     public void addVertex(Person person) {
-        if (personExist(person)) {
-            throw new KeyAlreadyExistsException(String.format(existMsgFormat, person.getName()));
-        }
-        graph.put(person, new HashSet<>());
+        String name = person.getName();
+        notExistOrThrow(name);
+        graph.put(name, new HashSet<>());
     }
 
     /**
-     * 在关系图中添加一个新人；若存在则抛出KeyAlreadyExistsException
+     * 在关系图中添加一个新关系
+     * 若人物不存在存在则抛出KeyException
      *
      * @param from 关系的源人物
      * @param to   关系的目标人物
+     * @return 若边成功添加则为true；边已存在则为false
      */
-    public void addEdge(Person from, Person to) throws KeyException {
-        Set<Person> fromSet = graph.get(from);
-        if (fromSet == null) {
-            throw new KeyException(String.format(notFoundMsgFormat, from.getName()));
-        }
-        if (!personExist(to)) {
-            throw new KeyException(String.format(notFoundMsgFormat, to.getName()));
-        }
+    public boolean addEdge(Person from, Person to) throws KeyException {
+        String fromName = from.getName();
+        existOrThrow(fromName);
 
-        fromSet.add(to);
+        String toName = to.getName();
+        existOrThrow(toName);
+
+        if (fromName.equals(toName)) // 不能自指
+            throw new IllegalArgumentException("Person cannot be add an edge to itself!");
+
+        Set<String> fromSet = graph.get(fromName);
+        return fromSet.add(toName);
     }
 
     /**
@@ -61,32 +88,38 @@ public class FriendshipGraph {
      * @param to   目标人物
      * @return 二者的社交距离；不相关则返回-1
      */
-    public int getDistance(Person from, Person to) {
+    public int getDistance(Person from, Person to) throws KeyException {
         class PersonWithDistance {
-            public final Person person;
-            public final int distance;
+            private final String name;
+            private final int distance;
 
-            public PersonWithDistance(Person person, int distance) {
-                this.person = person;
+            public PersonWithDistance(String name, int distance) {
+                this.name = name;
                 this.distance = distance;
             }
         }
 
+        String fromName = from.getName();
+        existOrThrow(fromName);
+
+        String toName = to.getName();
+        existOrThrow(toName);
+
         Queue<PersonWithDistance> queue = new LinkedList<>(); // BFS的队列
-        Set<Person> visit = new HashSet<>(); // 存储已经访问过的人物
+        Set<String> visit = new HashSet<>(); // 存储已经访问过的人物
         int personCNT = graph.size(); // 人物总数
 
-        queue.add(new PersonWithDistance(from, 0));
+        queue.add(new PersonWithDistance(fromName, 0));
         while (!queue.isEmpty() && visit.size() < personCNT) {
             PersonWithDistance top = queue.remove();
 
-            if (top.person == to)
+            if (top.name.equals(toName))
                 return top.distance;
 
-            for (Person p : graph.get(top.person)) {
-                if (!visit.contains(p)) {
-                    queue.add(new PersonWithDistance(p, top.distance + 1));
-                    visit.add(p);
+            for (String name : graph.get(top.name)) {
+                if (!visit.contains(name)) {
+                    queue.add(new PersonWithDistance(name, top.distance + 1));
+                    visit.add(name);
                 }
             }
         }
@@ -94,7 +127,7 @@ public class FriendshipGraph {
         return -1;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws KeyException {
         FriendshipGraph graph = new FriendshipGraph();
         Person rachel = new Person("Rachel");
         Person ross = new Person("Ross");
@@ -106,14 +139,10 @@ public class FriendshipGraph {
         graph.addVertex(ben);
         graph.addVertex(kramer);
 
-        try {
-            graph.addEdge(rachel, ross);
-            graph.addEdge(ross, rachel);
-            graph.addEdge(ross, ben);
-            graph.addEdge(ben, ross);
-        } catch (KeyException e) {
-            System.out.println(e);
-        }
+        graph.addEdge(rachel, ross);
+        graph.addEdge(ross, rachel);
+        graph.addEdge(ross, ben);
+        graph.addEdge(ben, ross);
 
         System.out.println(graph.getDistance(rachel, ross));   //should print 1
         System.out.println(graph.getDistance(rachel, ben));    //should print 2
