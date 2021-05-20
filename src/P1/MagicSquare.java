@@ -145,8 +145,8 @@ public class MagicSquare {
      *
      * @param fileName 指定的文件名
      * @return 是否为magic square
-     * @throws FileNotFoundException 当文件不存在时
-     * @throws ValueException        当文件内的数据有误时
+     * @throws IOException    当文件不存在时
+     * @throws ValueException 当文件内的数据有误时
      */
     private static boolean isLegalMagicSquare(String fileName) throws IOException, ValueException {
         InputStream f;
