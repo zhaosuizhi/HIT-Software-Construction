@@ -148,12 +148,12 @@ public class MagicSquare {
      * @throws FileNotFoundException 当文件不存在时
      * @throws ValueException        当文件内的数据有误时
      */
-    private static boolean isLegalMagicSquare(String fileName) throws FileNotFoundException, ValueException {
+    private static boolean isLegalMagicSquare(String fileName) throws IOException, ValueException {
         InputStream f;
         try {
             f = new FileInputStream(fileName);
-        } catch (FileNotFoundException e) {
-            throw new FileNotFoundException(fileName + " not found!");
+        } catch (IOException e) {
+            throw new IOException(fileName + " not found!");
         }
         Scanner scanner = new Scanner(f);
 
@@ -261,7 +261,7 @@ public class MagicSquare {
                     System.out.println(" is a magic square.");
                 else
                     System.out.println(" is not a magic square.");
-            } catch (FileNotFoundException | ValueException e) {
+            } catch (IOException | ValueException e) {
                 System.out.println(e.getMessage());
             }
         }
@@ -290,7 +290,7 @@ public class MagicSquare {
             else
                 System.out.println("Wrong!");
 
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             System.out.println("Can't open \"" + outputFile + "\"!");
         }
     }
