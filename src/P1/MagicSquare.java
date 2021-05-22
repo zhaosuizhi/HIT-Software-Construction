@@ -122,6 +122,7 @@ public class MagicSquare {
      *
      * @param scanner 一个输入流
      * @return 若读入正确则返回int数组；若错误则在标准输出中输出错误并返回null
+     * @throws NoSuchElementException 当没有下一行时
      */
     private static int[] parseLine2Array(Scanner scanner) throws NoSuchElementException {
         String inputBuf = scanner.nextLine(); // 读取一行
@@ -132,8 +133,8 @@ public class MagicSquare {
             String strNum = token.nextToken(); // 获取下一个数字字符串
 
             try {
-                array[i] = Integer.parseInt(strNum);
-            } catch (NumberFormatException e) { // 输入非法，无法解析为int
+                array[i] = Integer.parseUnsignedInt(strNum);
+            } catch (NumberFormatException e) { // 输入非法，无法解析为正整数
                 return null;
             }
         }
@@ -270,10 +271,14 @@ public class MagicSquare {
         System.out.println("------------------ Request 2 ------------------");
         System.out.println("Testing generateMagicSquare function...");
         PrintStream out = new PrintStream(System.out);
-        generateMagicSquare(5, out);
-        generateMagicSquare(6, out);
-        generateMagicSquare(0, out);
-        generateMagicSquare(-1, out);
+        if (!generateMagicSquare(5, out))
+            System.out.println("Generate failed!");
+        if (!generateMagicSquare(6, out))
+            System.out.println("Generate failed!");
+        if (!generateMagicSquare(0, out))
+            System.out.println("Generate failed!");
+        if (!generateMagicSquare(-1, out))
+            System.out.println("Generate failed!");
         System.out.println();
 
         String outputFile = "src/P1/txt/6.txt";
