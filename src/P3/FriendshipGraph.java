@@ -29,6 +29,7 @@ public class FriendshipGraph {
      * 若没有，抛出KeyException错误
      *
      * @param name 姓名
+     * @throws KeyException 当名字不存在时
      */
     private void existOrThrow(String name) throws KeyException {
         if (!personExist(name)) {
@@ -41,6 +42,7 @@ public class FriendshipGraph {
      * 若存在，抛出KeyAlreadyExistsException错误
      *
      * @param name 姓名
+     * @throws KeyAlreadyExistsException 当名字已存在时
      */
     private void notExistOrThrow(String name) throws KeyAlreadyExistsException {
         if (personExist(name)) {
@@ -66,6 +68,7 @@ public class FriendshipGraph {
      * @param from 关系的源人物
      * @param to   关系的目标人物
      * @return 若边成功添加则为true；边已存在则为false
+     * @throws KeyException 当from和to的名字有任一不存在时
      */
     public boolean addEdge(Person from, Person to) throws KeyException {
         String fromName = from.getName();
@@ -87,11 +90,12 @@ public class FriendshipGraph {
      * @param from 源人物
      * @param to   目标人物
      * @return 二者的社交距离；不相关则返回-1
+     * @throws KeyException 当from和to的名字有任一不存在时
      */
     public int getDistance(Person from, Person to) throws KeyException {
         class PersonWithDistance {
-            private final String name;
-            private final int distance;
+            final String name;
+            final int distance;
 
             public PersonWithDistance(String name, int distance) {
                 this.name = name;
@@ -107,7 +111,7 @@ public class FriendshipGraph {
 
         Queue<PersonWithDistance> queue = new LinkedList<>(); // BFS的队列
         Set<String> visit = new HashSet<>(); // 存储已经访问过的人物
-        int personCNT = graph.size(); // 人物总数
+        final int personCNT = graph.size(); // 人物总数
 
         queue.add(new PersonWithDistance(fromName, 0));
         while (!queue.isEmpty() && visit.size() < personCNT) {

@@ -20,11 +20,6 @@ class Node {
         this.next = null;
     }
 
-    public Node(Point point, Node next) {
-        this.point = point;
-        this.next = next;
-    }
-
     public Point getPoint() {
         return point;
     }
@@ -36,15 +31,6 @@ class Node {
      */
     public Node getNext() {
         return next;
-    }
-
-    /**
-     * 设置下一节点
-     *
-     * @param next 下一节点
-     */
-    public void setNext(Node next) {
-        this.next = next;
     }
 
     /**
@@ -128,7 +114,7 @@ public class TurtleSoup {
      */
     public static void drawSquare(Turtle turtle, int sideLength) {
         for (int i = 0; i < 4; i++) {
-            turtle.forward(100);
+            turtle.forward(sideLength);
             turtle.turn(90);
         }
     }

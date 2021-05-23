@@ -246,7 +246,7 @@ public class MagicSquare {
     public static void main(String[] args) {
         System.out.println("------------------ Request 1 ------------------");
 
-        String[] inputFilenames = {
+        final String[] inputFilenames = {
                 "src/P1/txt/1.txt",
                 "src/P1/txt/2.txt",
                 "src/P1/txt/3.txt",
@@ -256,7 +256,7 @@ public class MagicSquare {
 
         for (String filename : inputFilenames) {
             try {
-                boolean result = isLegalMagicSquare(filename);
+                final boolean result = isLegalMagicSquare(filename);
                 System.out.print(filename);
                 if (result)
                     System.out.println(" is a magic square.");
