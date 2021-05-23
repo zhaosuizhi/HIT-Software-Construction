@@ -3,6 +3,7 @@
  */
 package P2.turtle;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -200,7 +201,7 @@ public class TurtleSoup {
             absoluteBearing = targetX > currentX ? 90.0 : 270.0;
         else { // 一般情况
             double tan = (double) (targetX - currentX) / (double) (targetY - currentY);
-            absoluteBearing = Math.atan(tan);
+            absoluteBearing = Math.toDegrees(Math.atan(tan));
         }
 
         double bearing = 360 - currentBearing + absoluteBearing; // 相对旋转角度
@@ -224,7 +225,24 @@ public class TurtleSoup {
      * otherwise of size (# of points) - 1
      */
     public static List<Double> calculateBearings(List<Integer> xCoords, List<Integer> yCoords) {
-        throw new RuntimeException("implement me!");
+        assert xCoords.size() == yCoords.size();
+
+        List<Double> bearings = new ArrayList<>();
+        double currentBearing = 0.0;
+        int currentX = xCoords.get(0), currentY = yCoords.get(0);
+        int targetX, targetY;
+
+        for (int i = 1; i < xCoords.size(); i++) {
+            targetX = xCoords.get(i);
+            targetY = yCoords.get(i);
+            currentBearing = calculateBearingToPoint(currentBearing, currentX, currentY, targetX, targetY);
+            bearings.add(currentBearing);
+
+            currentX = targetX;
+            currentY = targetY;
+        }
+
+        return bearings;
     }
 
     /**
@@ -311,7 +329,7 @@ public class TurtleSoup {
         }
 
         // 将自定义的链表转换为Set后返回
-        Set<Point> convexHullWithoutLine = new HashSet<Point>();
+        Set<Point> convexHullWithoutLine = new HashSet<>();
         for (Node node = convexHull.getNext(); node != null; node = node.getNext()) {
             convexHullWithoutLine.add(node.getPoint());
         }
