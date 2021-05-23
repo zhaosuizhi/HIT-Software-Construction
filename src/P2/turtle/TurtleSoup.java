@@ -157,7 +157,7 @@ public class TurtleSoup {
      * @return the integer number of sides
      */
     public static int calculatePolygonSidesFromAngle(double angle) {
-        throw new RuntimeException("implement me!");
+        return (int) Math.round(360 / (180 - angle));
     }
 
     /**
@@ -372,8 +372,8 @@ public class TurtleSoup {
         DrawableTurtle turtle = new DrawableTurtle();
 
 //        drawSquare(turtle, 40);
-        drawRegularPolygon(turtle, 5, 50);
-//        drawPersonalArt(turtle);
+//        drawRegularPolygon(turtle, 5, 50);
+        drawPersonalArt(turtle);
 
         // draw the window
         turtle.draw();

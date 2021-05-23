@@ -103,8 +103,9 @@ public class FriendshipGraphTest {
     public void getDistanceTest() throws KeyException {
         Person p1 = new Person("Wang Huahua");
         Person p2 = new Person("Li Hua");
-        Person p3 = new Person("Zhang san");
-        Person p4 = new Person("Li si");
+        Person p3 = new Person("Zhang San");
+        Person p4 = new Person("Li Si");
+        Person p5 = new Person("Wang Wu");
 
         FriendshipGraph graph = getGraph();
         graph.addVertex(p1);
@@ -120,5 +121,18 @@ public class FriendshipGraphTest {
         assertEquals(1, graph.getDistance(p1, p2));
         assertEquals(3, graph.getDistance(p4, p3));
         assertEquals(-1, graph.getDistance(p2, p4));
+        assertEquals(0, graph.getDistance(p3, p3));
+        try {
+            graph.addEdge(p2, p5);
+            throw new AssertionError();
+        } catch (KeyException ignored) {
+            // correct
+        }
+        try {
+            graph.addEdge(p5, p1);
+            throw new AssertionError();
+        } catch (KeyException ignored) {
+            // correct
+        }
     }
 }
