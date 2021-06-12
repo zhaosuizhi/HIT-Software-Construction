@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Tests for ConcreteVerticesGraph.
@@ -31,119 +30,6 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     /*
      * Testing ConcreteVerticesGraph...
      */
-
-    @Test
-    public void testAdd() {
-        Graph<String> graph = emptyInstance();
-        String a = "a";
-        String b = "b";
-
-        Assert.assertTrue(graph.add(a));
-        Assert.assertTrue(graph.add(b));
-        Assert.assertFalse(graph.add(b));
-    }
-
-    @Test
-    public void testSet() {
-        Graph<String> graph = emptyInstance();
-        String a = "a";
-        String b = "b";
-        String c = "c";
-
-        graph.add(a);
-        graph.add(b);
-        int w1 = 3;
-        int w2 = 5;
-
-        Assert.assertEquals(0, graph.set(a, b, w1));
-        Assert.assertEquals(0, graph.set(b, a, w2));
-        Assert.assertEquals(0, graph.set(b, b, w2));
-        Assert.assertEquals(w1, graph.set(a, b, w2));
-
-        Assert.assertEquals(0, graph.set(c, a, w2));
-
-        Map<String, Integer> srcA = graph.sources(a);
-        Assert.assertEquals(1, srcA.size());
-        Assert.assertEquals(w2, (int) srcA.get(b));
-
-        Map<String, Integer> srcB = graph.sources(b);
-        Assert.assertEquals(w2, (int) srcB.get(a));
-    }
-
-    @Test
-    public void testRemove() {
-        Graph<String> graph = emptyInstance();
-        String a = "a";
-        String b = "b";
-        String c = "c";
-
-        graph.add(a);
-        graph.add(b);
-        int w = 5;
-
-        graph.set(a, b, w);
-        graph.set(b, a, w);
-        Assert.assertTrue(graph.remove(a));
-        Assert.assertFalse(graph.remove(c));
-
-        Map<String, Integer> srcB = graph.sources(b);
-        Assert.assertEquals(0, srcB.size());
-    }
-
-    @Test
-    public void testVertices() {
-        Graph<String> graph = emptyInstance();
-        String a = "a";
-        String b = "b";
-        String c = "c";
-
-        graph.add(a);
-        graph.add(b);
-        graph.add(c);
-
-        Set<String> vertices = graph.vertices();
-        Assert.assertEquals(3, vertices.size());
-        Assert.assertTrue(vertices.contains(a));
-        Assert.assertTrue(vertices.contains(b));
-        Assert.assertTrue(vertices.contains(c));
-    }
-
-    @Test
-    public void testSources() {
-        Graph<String> graph = emptyInstance();
-        String a = "a";
-        String b = "b";
-        String c = "c";
-
-        graph.add(a);
-        graph.add(b);
-        graph.add(c);
-        graph.set(b, a, 1);
-        graph.set(c, a, 2);
-
-        Map<String, Integer> src = graph.sources(a);
-        Assert.assertEquals(2, src.size());
-        Assert.assertEquals(1, (int) src.get(b));
-        Assert.assertEquals(2, (int) src.get(c));
-    }
-
-    @Test
-    public void testTargets() {
-        Graph<String> graph = emptyInstance();
-        String a = "a";
-        String b = "b";
-        String c = "c";
-
-        graph.add(a);
-        graph.add(b);
-        graph.add(c);
-        graph.set(b, a, 1);
-        graph.set(c, a, 2);
-
-        Map<String, Integer> src = graph.targets(c);
-        Assert.assertEquals(1, src.size());
-        Assert.assertEquals(2, (int) src.get(a));
-    }
 
     // Testing strategy for ConcreteVerticesGraph.toString()
     //   Insert several vertices and edges, then check if the output is correct
