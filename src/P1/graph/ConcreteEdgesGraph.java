@@ -35,12 +35,6 @@ public class ConcreteEdgesGraph implements Graph<String> {
         }
     }
 
-    /**
-     * Add a vertex to the graph
-     *
-     * @param vertex label for the new vertex
-     * @return whether vertex had not been on the graph
-     */
     @Override
     public boolean add(String vertex) {
         boolean ret = vertices.add(vertex);
@@ -48,47 +42,31 @@ public class ConcreteEdgesGraph implements Graph<String> {
         return ret;
     }
 
-    /**
-     * Set a new edge to this graph
-     *
-     * @param source label of the source vertex
-     * @param target label of the target vertex
-     * @param weight non-negative weight of the edge
-     * @return <p> 0 if an new edge was set
-     *         <p> 1 if the edge exists and its weight is update
-     *         <p>-1 if argument error
-     */
     @Override
     public int set(String source, String target, int weight) {
+        assert weight >= 0;
+        assert !source.equals(target);
         if (!vertices.contains(source) || !vertices.contains(target))
-            return -1;
-
-        Edge<String> newEdge;
-        try {
-            newEdge = new Edge<>(source, target, weight);
-        } catch (AssertionError e) { // validate error
-            return -1;
-        }
+            return 0;
 
         int ret = 0;
         for (Edge<String> e : edges) { // remove the old edge
             if (e.getSource().equals(source) && e.getTarget().equals(target)) {
+                ret = e.getWeight();
                 edges.remove(e);
-                ret = 1;
                 break;
             }
         }
-        edges.add(newEdge);
+
+        if (weight > 0) { // update
+            Edge<String> newEdge = new Edge<>(source, target, weight);
+            edges.add(newEdge);
+        }
+
         checkRep();
         return ret;
     }
 
-    /**
-     * Remove the given vertex from this graph
-     *
-     * @param vertex label of the vertex to remove
-     * @return if the vertex was in the graph
-     */
     @Override
     public boolean remove(String vertex) {
         boolean ret = vertices.remove(vertex);
@@ -99,22 +77,12 @@ public class ConcreteEdgesGraph implements Graph<String> {
         return ret;
     }
 
-    /**
-     * Get all vertices
-     *
-     * @return The set of all vertices
-     */
     @Override
     public Set<String> vertices() {
         return new HashSet<>(vertices);
     }
 
-    /**
-     * Get all sources of the given target
-     *
-     * @param target a label
-     * @return The map of source->weight
-     */
+
     @Override
     public Map<String, Integer> sources(String target) {
         Map<String, Integer> src = new HashMap<>();
@@ -127,12 +95,6 @@ public class ConcreteEdgesGraph implements Graph<String> {
         return src;
     }
 
-    /**
-     * Get all targets of the given source
-     *
-     * @param source a label
-     * @return The map of target->weight
-     */
     @Override
     public Map<String, Integer> targets(String source) {
         Map<String, Integer> tar = new HashMap<>();
@@ -148,9 +110,18 @@ public class ConcreteEdgesGraph implements Graph<String> {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("ConcreteEdgesGraph {\n");
+        sb.append("Graph {\n");
+
+        sb.append("\tVertices: ")
+                .append(String.join(", ", vertices))
+                .append('\n');
+
+        sb.append("\tEdges:\n");
         for (Edge<String> e : edges) {
-            sb.append('\t').append(e).append('\n');
+            sb.append("\t\t").append(e.getSource())
+                    .append("->").append(e.getTarget())
+                    .append(':').append(e.getWeight())
+                    .append('\n');
         }
         sb.append("}\n");
 
@@ -159,7 +130,7 @@ public class ConcreteEdgesGraph implements Graph<String> {
 }
 
 /**
- * TODO specification
+ * Directed edge in a ConcreteEdgesGraph
  * Immutable.
  * This class is internal to the rep of ConcreteEdgesGraph.
  *

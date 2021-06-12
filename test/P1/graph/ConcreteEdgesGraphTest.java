@@ -56,10 +56,15 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
 
         Assert.assertEquals(0, graph.set(a, b, w1));
         Assert.assertEquals(0, graph.set(b, a, w2));
-        Assert.assertEquals(1, graph.set(a, b, w2));
-        Assert.assertEquals(-1, graph.set(b, b, w2));
-        Assert.assertEquals(-1, graph.set(b, c, w2));
-        Assert.assertEquals(-1, graph.set(c, a, w2));
+        Assert.assertEquals(w1, graph.set(a, b, w2));
+
+        try {
+            Assert.assertEquals(0, graph.set(b, b, w2));
+            throw new AssertionError();
+        } catch (AssertionError ignored) {
+        }
+
+        Assert.assertEquals(0, graph.set(c, a, w2));
 
         Map<String, Integer> srcA = graph.sources(a);
         Assert.assertEquals(1, srcA.size());
@@ -160,11 +165,11 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
         graph.set(a, b, w);
         graph.set(b, a, w);
 
-        System.out.println(graph);
-
-        Assert.assertEquals("ConcreteEdgesGraph {\n" +
-                "\tEdge{a->b, w=2}\n" +
-                "\tEdge{b->a, w=2}\n" +
+        Assert.assertEquals("Graph {\n" +
+                "\tVertices: a, b\n" +
+                "\tEdges:\n" +
+                "\t\ta->b:2\n" +
+                "\t\tb->a:2\n" +
                 "}\n", graph.toString());
     }
 
@@ -186,24 +191,23 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
         String a = "a";
         String b = "b";
         String anotherA = "a";
-        Edge<String> edge;
 
-        edge = new Edge<>(a, b, 1);
+        new Edge<>(a, b, 1);
 
         try {
-            edge = new Edge<>(a, anotherA, 1);
+            new Edge<>(a, anotherA, 1);
             throw new AssertionError();
         } catch (AssertionError ignored) {
         }
 
         try {
-            edge = new Edge<>(a, b, 0);
+            new Edge<>(a, b, 0);
             throw new AssertionError();
         } catch (AssertionError ignored) {
         }
 
         try {
-            edge = new Edge<>(a, b, -1);
+            new Edge<>(a, b, -1);
             throw new AssertionError();
         } catch (AssertionError ignored) {
         }
