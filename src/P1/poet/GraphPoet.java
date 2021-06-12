@@ -58,11 +58,15 @@ public class GraphPoet {
     private final Graph<String> graph = Graph.empty();
 
     // Abstraction function:
-    //   TODO
+    //   AF(graph) = Directed Graph D = (V, E)
+    //       V = graph.vertices()
+    //       E = src->v weights w for src: w in graph.sources(v)
+    //             and v->tar weights w for tar: w in graph.targets(v)
+    //             for v in V
     // Representation invariant:
-    //   TODO
+    //   no isolated point on graph
     // Safety from rep exposure:
-    //   TODO
+    //   graph is "private final" so it can't be reassigned
 
     /**
      * Create a new poet with the graph from corpus (as described above).
@@ -88,6 +92,8 @@ public class GraphPoet {
                 graph.set(src, tar, w);
             }
         }
+
+        checkRep();
     }
 
     /**
@@ -109,7 +115,10 @@ public class GraphPoet {
     }
 
     private void checkRep() {
-        // TODO checkRep
+        Set<String> vertices = graph.vertices();
+        for (String v : vertices) {
+            assert !graph.sources(v).isEmpty() || !graph.targets(v).isEmpty(); // not an isolated point
+        }
     }
 
     /**
@@ -168,12 +177,14 @@ public class GraphPoet {
         assert tar != null;
         sb.append(' ').append(tar);
 
+        checkRep();
+
         return sb.toString();
     }
 
-    // TODO toString()
     @Override
     public String toString() {
-        return graph.toString();
+        String result = graph.toString();
+        return "GraphPoet" + result.substring(5);
     }
 }
