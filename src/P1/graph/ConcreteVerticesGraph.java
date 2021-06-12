@@ -10,10 +10,10 @@ import java.util.*;
  *
  * <p>PS2 instructions: you MUST use the provided rep.
  */
-public class ConcreteVerticesGraph implements Graph<String> {
+public class ConcreteVerticesGraph<T> implements Graph<T> {
 
-    private final List<Vertex<String>> vertices = new ArrayList<>();
-    private final Set<String> nameSet = new HashSet<>(); // all names on the graph, store for easy to search
+    private final List<Vertex<T>> vertices = new ArrayList<>();
+    private final Set<T> nameSet = new HashSet<>(); // all names on the graph, store for easy to search
 
     // Abstraction function:
     //   AF(vertices) = Directed Graph D = (V, E)
@@ -29,20 +29,20 @@ public class ConcreteVerticesGraph implements Graph<String> {
 
 
     private void checkRep() {
-        for (Vertex<String> v : vertices) {
+        for (Vertex<T> v : vertices) {
             nameSet.add(v.getName());
         }
 
-        for (Vertex<String> v : vertices) {
-            Map<String, Integer> srcSet = v.getSources();
+        for (Vertex<T> v : vertices) {
+            Map<T, Integer> srcSet = v.getSources();
             assert nameSet.containsAll(srcSet.keySet());
-            Map<String, Integer> tarSet = v.getTargets();
+            Map<T, Integer> tarSet = v.getTargets();
             assert nameSet.containsAll(tarSet.keySet());
         }
     }
 
     @Override
-    public boolean add(String vertex) {
+    public boolean add(T vertex) {
         if (nameSet.contains(vertex)) {
             return false;
         } else {
@@ -54,12 +54,12 @@ public class ConcreteVerticesGraph implements Graph<String> {
     }
 
     @Override
-    public int set(String source, String target, int weight) {
+    public int set(T source, T target, int weight) {
         if (!nameSet.contains(source) || !nameSet.contains(target))
             return 0;
 
         int ret = 0;
-        for (Vertex<String> v : vertices) {
+        for (Vertex<T> v : vertices) {
             if (v.getName().equals(source))
                 ret = v.updateTarget(target, weight);
             else if (v.getName().equals(target))
@@ -71,11 +71,11 @@ public class ConcreteVerticesGraph implements Graph<String> {
     }
 
     @Override
-    public boolean remove(String vertex) {
+    public boolean remove(T vertex) {
         boolean ret = nameSet.remove(vertex);
         if (ret) { // 移出与该顶点有关的所有边
             vertices.removeIf(e -> e.getName().equals(vertex));
-            for (Vertex<String> v : vertices) {
+            for (Vertex<T> v : vertices) {
                 v.updateSource(vertex, 0); // remove the vertex as source
                 v.updateTarget(vertex, 0); // remove the vertex as target
             }
@@ -85,14 +85,14 @@ public class ConcreteVerticesGraph implements Graph<String> {
     }
 
     @Override
-    public Set<String> vertices() {
+    public Set<T> vertices() {
         return new HashSet<>(nameSet);
     }
 
     @Override
-    public Map<String, Integer> sources(String target) {
+    public Map<T, Integer> sources(T target) {
         if (nameSet.contains(target)) {
-            for (Vertex<String> v : vertices)
+            for (Vertex<T> v : vertices)
                 if (v.getName().equals(target))
                     return new HashMap<>(v.getSources());
         }
@@ -101,9 +101,9 @@ public class ConcreteVerticesGraph implements Graph<String> {
     }
 
     @Override
-    public Map<String, Integer> targets(String source) {
+    public Map<T, Integer> targets(T source) {
         if (nameSet.contains(source)) {
-            for (Vertex<String> v : vertices)
+            for (Vertex<T> v : vertices)
                 if (v.getName().equals(source))
                     return new HashMap<>(v.getTargets());
         }
@@ -117,14 +117,14 @@ public class ConcreteVerticesGraph implements Graph<String> {
         sb.append("Graph {\n");
 
         sb.append("\tVertices: ")
-                .append(String.join(", ", nameSet))
+                .append(String.join(", ", nameSet.toString()))
                 .append('\n');
 
         sb.append("\tEdges:\n");
-        for (Vertex<String> v : vertices) {
-            String name = v.getName();
-            Map<String, Integer> targetsMap = v.getTargets();
-            for (String tarName : targetsMap.keySet()) {
+        for (Vertex<T> v : vertices) {
+            T name = v.getName();
+            Map<T, Integer> targetsMap = v.getTargets();
+            for (T tarName : targetsMap.keySet()) {
                 sb.append("\t\t").append(name)
                         .append("->").append(tarName)
                         .append(':').append(targetsMap.get(tarName))
@@ -132,8 +132,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
             }
         }
 
-
-        sb.append("}\n");
+        sb.append("}");
         return sb.toString();
     }
 }
@@ -256,7 +255,7 @@ class Vertex<T> {
         for (T target : targetSet.keySet()) {
             sb.append('\t').append(name).append("->").append(target).append(':').append(targetSet.get(target)).append('\n');
         }
-        sb.append("}\n");
+        sb.append("}");
         return sb.toString();
     }
 }

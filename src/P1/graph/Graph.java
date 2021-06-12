@@ -24,8 +24,8 @@ public interface Graph<L> {
      *
      * @return a new empty weighted directed graph
      */
-    public static Graph<String> empty() {
-        return new ConcreteEdgesGraph();
+    static <L> Graph<L> empty() {
+        return new ConcreteEdgesGraph<>();
     }
 
     /**
@@ -35,7 +35,7 @@ public interface Graph<L> {
      * @return true if this graph did not already include a vertex with the
      * given label; otherwise false (and this graph is not modified)
      */
-    public boolean add(L vertex);
+    boolean add(L vertex);
 
     /**
      * Add, change, or remove a weighted directed edge in this graph.
@@ -51,7 +51,7 @@ public interface Graph<L> {
      * @return the previous weight of the edge, or zero if there was no such
      * edge
      */
-    public int set(L source, L target, int weight);
+    int set(L source, L target, int weight);
 
     /**
      * Remove a vertex from this graph; any edges to or from the vertex are
@@ -61,14 +61,14 @@ public interface Graph<L> {
      * @return true if this graph included a vertex with the given label;
      * otherwise false (and this graph is not modified)
      */
-    public boolean remove(L vertex);
+    boolean remove(L vertex);
 
     /**
      * Get all the vertices in this graph.
      *
      * @return the set of labels of vertices in this graph
      */
-    public Set<L> vertices();
+    Set<L> vertices();
 
     /**
      * Get the source vertices with directed edges to a target vertex and the
@@ -80,7 +80,7 @@ public interface Graph<L> {
      * the value for each key is the (nonzero) weight of the edge from
      * the key to target
      */
-    public Map<L, Integer> sources(L target);
+    Map<L, Integer> sources(L target);
 
     /**
      * Get the target vertices with directed edges from a source vertex and the
@@ -92,6 +92,6 @@ public interface Graph<L> {
      * the value for each key is the (nonzero) weight of the edge from
      * source to the key
      */
-    public Map<L, Integer> targets(L source);
+    Map<L, Integer> targets(L source);
 
 }

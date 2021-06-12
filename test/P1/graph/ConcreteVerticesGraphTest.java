@@ -25,7 +25,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
      */
     @Override
     public Graph<String> emptyInstance() {
-        return new ConcreteVerticesGraph();
+        return new ConcreteVerticesGraph<>();
     }
 
     /*
@@ -167,11 +167,11 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
         graph.set(b, a, w);
 
         Assert.assertEquals("Graph {\n" +
-                "\tVertices: a, b\n" +
+                "\tVertices: [a, b]\n" +
                 "\tEdges:\n" +
                 "\t\ta->b:2\n" +
                 "\t\tb->a:2\n" +
-                "}\n", graph.toString());
+                "}", graph.toString());
     }
 
     /*
@@ -242,6 +242,6 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
         Assert.assertEquals("Vertex {\n" +
                 "\tc->a:2\n" +
                 "\ta->b:1\n" +
-                "}\n", v.toString());
+                "}", v.toString());
     }
 }

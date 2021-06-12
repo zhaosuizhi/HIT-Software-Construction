@@ -10,10 +10,10 @@ import java.util.*;
  *
  * <p>PS2 instructions: you MUST use the provided rep.
  */
-public class ConcreteEdgesGraph implements Graph<String> {
+public class ConcreteEdgesGraph<T> implements Graph<T> {
 
-    private final Set<String> vertices = new HashSet<>();
-    private final List<Edge<String>> edges = new ArrayList<>();
+    private final Set<T> vertices = new HashSet<>();
+    private final List<Edge<T>> edges = new ArrayList<>();
 
     // Abstraction function:
     //   AF(vertices, edges) = Directed Graph D = (V, E)
@@ -29,28 +29,28 @@ public class ConcreteEdgesGraph implements Graph<String> {
     //   All fields are mutable, so defensive copy in methods: vertices
 
     private void checkRep() {
-        for (Edge<String> e : edges) {
+        for (Edge<T> e : edges) {
             assert vertices.contains(e.getTarget());
             assert vertices.contains(e.getSource());
         }
     }
 
     @Override
-    public boolean add(String vertex) {
+    public boolean add(T vertex) {
         boolean ret = vertices.add(vertex);
         checkRep();
         return ret;
     }
 
     @Override
-    public int set(String source, String target, int weight) {
+    public int set(T source, T target, int weight) {
         assert weight >= 0;
         assert !source.equals(target);
         if (!vertices.contains(source) || !vertices.contains(target))
             return 0;
 
         int ret = 0;
-        for (Edge<String> e : edges) { // remove the old edge
+        for (Edge<T> e : edges) { // remove the old edge
             if (e.getSource().equals(source) && e.getTarget().equals(target)) {
                 ret = e.getWeight();
                 edges.remove(e);
@@ -59,7 +59,7 @@ public class ConcreteEdgesGraph implements Graph<String> {
         }
 
         if (weight > 0) { // update
-            Edge<String> newEdge = new Edge<>(source, target, weight);
+            Edge<T> newEdge = new Edge<>(source, target, weight);
             edges.add(newEdge);
         }
 
@@ -68,7 +68,7 @@ public class ConcreteEdgesGraph implements Graph<String> {
     }
 
     @Override
-    public boolean remove(String vertex) {
+    public boolean remove(T vertex) {
         boolean ret = vertices.remove(vertex);
         if (ret) { // 移出与该顶点有关的所有边
             edges.removeIf(e -> e.getSource().equals(vertex) || e.getTarget().equals(vertex));
@@ -78,16 +78,16 @@ public class ConcreteEdgesGraph implements Graph<String> {
     }
 
     @Override
-    public Set<String> vertices() {
+    public Set<T> vertices() {
         return new HashSet<>(vertices);
     }
 
 
     @Override
-    public Map<String, Integer> sources(String target) {
-        Map<String, Integer> src = new HashMap<>();
+    public Map<T, Integer> sources(T target) {
+        Map<T, Integer> src = new HashMap<>();
         if (vertices.contains(target)) {
-            for (Edge<String> e : edges) {
+            for (Edge<T> e : edges) {
                 if (e.getTarget().equals(target))
                     src.put(e.getSource(), e.getWeight());
             }
@@ -96,10 +96,10 @@ public class ConcreteEdgesGraph implements Graph<String> {
     }
 
     @Override
-    public Map<String, Integer> targets(String source) {
-        Map<String, Integer> tar = new HashMap<>();
+    public Map<T, Integer> targets(T source) {
+        Map<T, Integer> tar = new HashMap<>();
         if (vertices.contains(source)) {
-            for (Edge<String> e : edges) {
+            for (Edge<T> e : edges) {
                 if (e.getSource().equals(source))
                     tar.put(e.getTarget(), e.getWeight());
             }
@@ -113,17 +113,17 @@ public class ConcreteEdgesGraph implements Graph<String> {
         sb.append("Graph {\n");
 
         sb.append("\tVertices: ")
-                .append(String.join(", ", vertices))
+                .append(String.join(", ", vertices.toString()))
                 .append('\n');
 
         sb.append("\tEdges:\n");
-        for (Edge<String> e : edges) {
+        for (Edge<T> e : edges) {
             sb.append("\t\t").append(e.getSource())
                     .append("->").append(e.getTarget())
                     .append(':').append(e.getWeight())
                     .append('\n');
         }
-        sb.append("}\n");
+        sb.append("}");
 
         return sb.toString();
     }
