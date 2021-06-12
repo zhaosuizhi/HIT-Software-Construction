@@ -57,13 +57,8 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
 
         Assert.assertEquals(0, graph.set(a, b, w1));
         Assert.assertEquals(0, graph.set(b, a, w2));
+        Assert.assertEquals(0, graph.set(b, b, w2));
         Assert.assertEquals(w1, graph.set(a, b, w2));
-
-        try {
-            Assert.assertEquals(0, graph.set(b, b, w2));
-            throw new AssertionError();
-        } catch (AssertionError ignored) {
-        }
 
         Assert.assertEquals(0, graph.set(c, a, w2));
 

@@ -155,8 +155,9 @@ class Vertex<T> {
     //     any src->w in sourceSet, from src to name is a directed edge whose weight is w
     //     any tar->w in targetSet, from name to tar is a directed edge whose weight is w
     // Representation invariant:
-    //   sourceSet.containsKey(name) == false
-    //   targetSet.containsKey(name) == false
+    //     sourceSet != null && targetSet != null
+    //         which is is guaranteed by "private final" modifier and "new" syntax on each field
+    //         so there's no need for an extra checkRep function
     // Safety from rep exposure:
     //   All fields are "private final" so they can't be reassigned
     //   Map is mutable, so defensive copy in getSources and getTargets
@@ -164,11 +165,6 @@ class Vertex<T> {
 
     public Vertex(T vertex) {
         name = vertex;
-    }
-
-    private void checkRep() {
-        assert !sourceSet.containsKey(name);
-        assert !targetSet.containsKey(name);
     }
 
     /**
@@ -230,7 +226,6 @@ class Vertex<T> {
 
     private int updateRelationship(T source, int weight, Map<T, Integer> set) {
         assert weight >= 0;
-        assert !name.equals(source);
 
         Integer wBefore;
         if (weight > 0) // update
@@ -238,7 +233,6 @@ class Vertex<T> {
         else // remove
             wBefore = set.remove(source);
 
-        checkRep();
         if (wBefore == null)
             return 0;
         else

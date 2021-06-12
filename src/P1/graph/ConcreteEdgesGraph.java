@@ -45,7 +45,6 @@ public class ConcreteEdgesGraph<T> implements Graph<T> {
     @Override
     public int set(T source, T target, int weight) {
         assert weight >= 0;
-        assert !source.equals(target);
         if (!vertices.contains(source) || !vertices.contains(target))
             return 0;
 
@@ -58,7 +57,7 @@ public class ConcreteEdgesGraph<T> implements Graph<T> {
             }
         }
 
-        if (weight > 0) { // update
+        if (weight > 0) { // update (weight == 0 means delete)
             Edge<T> newEdge = new Edge<>(source, target, weight);
             edges.add(newEdge);
         }
@@ -146,7 +145,6 @@ class Edge<T> {
     // Abstraction function:
     //   AF(from, to, weight) = a weighted directed edge from "from" to "to" whose weight is "weight"
     // Representation invariant:
-    //   from.equals(to) == false
     //   weight > 0
     // Safety from rep exposure:
     //   All fields are "private final" so they can't be reassigned
@@ -170,7 +168,6 @@ class Edge<T> {
     }
 
     private void checkRep() {
-        assert !source.equals(target);
         assert weight > 0;
     }
 
