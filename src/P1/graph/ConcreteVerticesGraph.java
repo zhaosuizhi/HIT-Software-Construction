@@ -13,7 +13,6 @@ import java.util.*;
 public class ConcreteVerticesGraph<T> implements Graph<T> {
 
     private final List<Vertex<T>> vertices = new ArrayList<>();
-    private final Set<T> nameSet = new HashSet<>(); // all names on the graph, store for easy to search
 
     // Abstraction function:
     //   AF(vertices) = Directed Graph D = (V, E)
@@ -29,9 +28,7 @@ public class ConcreteVerticesGraph<T> implements Graph<T> {
 
 
     private void checkRep() {
-        for (Vertex<T> v : vertices) {
-            nameSet.add(v.getName());
-        }
+        Set<T> nameSet = getNameSet();
 
         for (Vertex<T> v : vertices) {
             Map<T, Integer> srcSet = v.getSources();
@@ -41,13 +38,26 @@ public class ConcreteVerticesGraph<T> implements Graph<T> {
         }
     }
 
+    /**
+     * Get the Set of all vertices' name
+     *
+     * @return Set including all vertices' name
+     */
+    private Set<T> getNameSet() {
+        Set<T> nameSet = new HashSet<>();
+
+        for (Vertex<T> v : vertices)
+            nameSet.add(v.getName());
+
+        return nameSet;
+    }
+
     @Override
     public boolean add(T vertex) {
-        if (nameSet.contains(vertex)) {
+        if (getNameSet().contains(vertex)) {
             return false;
         } else {
             vertices.add(new Vertex<>(vertex));
-            nameSet.add(vertex);
             checkRep();
             return true;
         }
@@ -55,6 +65,7 @@ public class ConcreteVerticesGraph<T> implements Graph<T> {
 
     @Override
     public int set(T source, T target, int weight) {
+        Set<T> nameSet = getNameSet();
         if (!nameSet.contains(source) || !nameSet.contains(target))
             return 0;
 
@@ -72,7 +83,7 @@ public class ConcreteVerticesGraph<T> implements Graph<T> {
 
     @Override
     public boolean remove(T vertex) {
-        boolean ret = nameSet.remove(vertex);
+        boolean ret = getNameSet().contains(vertex);
         if (ret) { // 移出与该顶点有关的所有边
             vertices.removeIf(e -> e.getName().equals(vertex));
             for (Vertex<T> v : vertices) {
@@ -86,12 +97,12 @@ public class ConcreteVerticesGraph<T> implements Graph<T> {
 
     @Override
     public Set<T> vertices() {
-        return new HashSet<>(nameSet);
+        return getNameSet();
     }
 
     @Override
     public Map<T, Integer> sources(T target) {
-        if (nameSet.contains(target)) {
+        if (getNameSet().contains(target)) {
             for (Vertex<T> v : vertices)
                 if (v.getName().equals(target))
                     return new HashMap<>(v.getSources());
@@ -102,7 +113,7 @@ public class ConcreteVerticesGraph<T> implements Graph<T> {
 
     @Override
     public Map<T, Integer> targets(T source) {
-        if (nameSet.contains(source)) {
+        if (getNameSet().contains(source)) {
             for (Vertex<T> v : vertices)
                 if (v.getName().equals(source))
                     return new HashMap<>(v.getTargets());
@@ -117,7 +128,7 @@ public class ConcreteVerticesGraph<T> implements Graph<T> {
         sb.append("Graph {\n");
 
         sb.append("\tVertices: ")
-                .append(String.join(", ", nameSet.toString()))
+                .append(String.join(", ", getNameSet().toString()))
                 .append('\n');
 
         sb.append("\tEdges:\n");
@@ -155,9 +166,12 @@ class Vertex<T> {
     //     any src->w in sourceSet, from src to name is a directed edge whose weight is w
     //     any tar->w in targetSet, from name to tar is a directed edge whose weight is w
     // Representation invariant:
-    //     sourceSet != null && targetSet != null
-    //         which is is guaranteed by "private final" modifier and "new" syntax on each field
-    //         so there's no need for an extra checkRep function
+    //     1. name != null
+    //     2. sourceSet != null
+    //     3. targetSet != null
+    //     4. both sourceSet.containsKey(null) and targetSet.containsKey(null) should be null
+    //         2 & 3 are guaranteed by "private final" modifier and "new" syntax on each field
+    //         so they don't need an extra check in checkRep method
     // Safety from rep exposure:
     //   All fields are "private final" so they can't be reassigned
     //   Map is mutable, so defensive copy in getSources and getTargets
@@ -165,6 +179,14 @@ class Vertex<T> {
 
     public Vertex(T vertex) {
         name = vertex;
+
+        checkRep();
+    }
+
+    private void checkRep() {
+        assert name != null;
+        assert !sourceSet.containsKey(null);
+        assert !targetSet.containsKey(null);
     }
 
     /**
@@ -232,6 +254,8 @@ class Vertex<T> {
             wBefore = set.put(source, weight);
         else // remove
             wBefore = set.remove(source);
+
+        checkRep();
 
         if (wBefore == null)
             return 0;

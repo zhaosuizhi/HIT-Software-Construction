@@ -145,6 +145,8 @@ class Edge<T> {
     // Abstraction function:
     //   AF(from, to, weight) = a weighted directed edge from "from" to "to" whose weight is "weight"
     // Representation invariant:
+    //   source != null
+    //   target != null
     //   weight > 0
     // Safety from rep exposure:
     //   All fields are "private final" so they can't be reassigned
@@ -168,6 +170,8 @@ class Edge<T> {
     }
 
     private void checkRep() {
+        assert source != null;
+        assert target != null;
         assert weight > 0;
     }
 

@@ -116,8 +116,9 @@ public class GraphPoet {
 
     private void checkRep() {
         Set<String> vertices = graph.vertices();
-        for (String v : vertices) {
-            assert !graph.sources(v).isEmpty() || !graph.targets(v).isEmpty(); // not an isolated point
+        if (vertices.size() > 1) {
+            for (String v : vertices)
+                assert !graph.sources(v).isEmpty() || !graph.targets(v).isEmpty(); // not an isolated point
         }
     }
 
@@ -133,6 +134,8 @@ public class GraphPoet {
 
         if (wordCount == 0) // empty input
             return "";
+        else if (wordCount == 1) // only one word
+            return input;
 
         StringBuilder sb = new StringBuilder();
 

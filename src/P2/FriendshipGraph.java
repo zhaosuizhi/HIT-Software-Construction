@@ -4,10 +4,7 @@ import P1.graph.Graph;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
 import java.security.KeyException;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 public class FriendshipGraph {
     private final Graph<Person> graph;
@@ -15,8 +12,31 @@ public class FriendshipGraph {
     private static final String existMsgFormat = "Person \"%s\" already exists!";
     private static final String notFoundMsgFormat = "Person \"%s\" not found!";
 
+    // Abstraction function:
+    //   AF(graph) = Directed Graph D = (V, E) refers to a friendship graph
+    //       V = graph.vertices()
+    //       E = from src to v for src in graph.sources(v).keySet()
+    //             unions from v to tar for tar in graph.targets(v).keySet()
+    //             for v in V
+    // Representation invariant:
+    //   1. graph != null
+    //   2. for each v in V, v not in neither graph.sources(v).keySet() nor graph.targets(v).keySet(),
+    //          which means no self-reference
+    //   The 1st one is guaranteed by constructor.
+    // Safety from rep exposure:
+    //   graph is "private final" so it can't be reassigned
+    //   String is immutable
+
     public FriendshipGraph() {
         graph = Graph.empty();
+    }
+
+    private void checkRep() {
+        Set<Person> peopleSet = graph.vertices();
+        for (Person p : peopleSet) {
+            assert !graph.sources(p).containsKey(p);
+            assert !graph.targets(p).containsKey(p);
+        }
     }
 
     /**
@@ -63,6 +83,7 @@ public class FriendshipGraph {
     public void addVertex(Person person) {
         notExistOrThrow(person);
         graph.add(person);
+        checkRep();
     }
 
     /**
@@ -81,7 +102,9 @@ public class FriendshipGraph {
         if (from.equals(to)) // 不能自指
             throw new IllegalArgumentException("Person cannot be add an edge to itself!");
 
-        return graph.set(from, to, 1) == 0;
+        int setResult = graph.set(from, to, 1);
+        checkRep();
+        return setResult == 0;
     }
 
     /**
