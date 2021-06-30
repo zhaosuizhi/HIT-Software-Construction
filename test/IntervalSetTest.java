@@ -1,4 +1,4 @@
-import adt.IntervalSet;
+import adt.utl.IntervalSet;
 import org.junit.Assert;
 import org.junit.Test;
 

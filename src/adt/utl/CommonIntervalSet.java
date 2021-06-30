@@ -1,4 +1,4 @@
-package adt;
+package adt.utl;
 
 import java.util.*;
 
@@ -26,6 +26,9 @@ public class CommonIntervalSet<L> extends IntervalSet<L> {
 
     @Override
     public boolean insert(long start, long end, L label) {
+        if (label == null)
+            throw new NullPointerException("label不能为null");
+
         Interval interval = new Interval(start, end);
 
         if (intervalMap.containsKey(label)  // 标签已经被添加过

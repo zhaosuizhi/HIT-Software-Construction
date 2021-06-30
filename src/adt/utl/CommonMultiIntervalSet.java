@@ -1,4 +1,4 @@
-package adt;
+package adt.utl;
 
 import java.util.*;
 
@@ -39,7 +39,7 @@ public class CommonMultiIntervalSet<L> implements MultiIntervalSet<L> {
     }
 
     @Override
-    public boolean insert(long start, long end, L label) {
+    public boolean insert(long start, long end, L label) throws NullPointerException, IllegalArgumentException {
         Interval.validInterval(start, end); // 非法输入时抛出IllegalArgumentException
 
         IntervalSet<Integer> set = intervalSetMap.get(label);

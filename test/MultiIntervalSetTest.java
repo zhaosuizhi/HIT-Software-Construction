@@ -1,6 +1,6 @@
-import adt.CommonMultiIntervalSet;
-import adt.IntervalSet;
-import adt.MultiIntervalSet;
+import adt.utl.CommonMultiIntervalSet;
+import adt.utl.IntervalSet;
+import adt.utl.MultiIntervalSet;
 import org.junit.Assert;
 import org.junit.Test;
 

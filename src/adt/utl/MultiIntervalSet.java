@@ -1,4 +1,4 @@
-package adt;
+package adt.utl;
 
 import java.util.Set;
 
@@ -21,9 +21,10 @@ public interface MultiIntervalSet<L> {
      * @param end   结束时间
      * @param label 标签
      * @return 是否添加成功，若失败说明存在冲突
-     * @throws IllegalArgumentException 当start, end不满足0 <= start < end时
+     * @throws NullPointerException     当label == null时
+     * @throws IllegalArgumentException 当start, end不满足0 <= start <= end时
      */
-    boolean insert(long start, long end, L label);
+    boolean insert(long start, long end, L label) throws NullPointerException, IllegalArgumentException;
 
     /**
      * 获得当前的标签集合

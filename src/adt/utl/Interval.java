@@ -1,4 +1,4 @@
-package adt;
+package adt.utl;
 
 
 import java.util.Objects;
@@ -16,14 +16,14 @@ class Interval implements Comparable<Interval> {
     // 抽象函数:
     //   AF(start, end) = 从start到end的时间段
     // 表示不变量:
-    //   0 <= start < end
+    //   0 <= start <= end
     // 防止表示暴露:
     //   start和end均为private final，Long是不可变类型，故无法在初始化后被直接访问和修改
 
     /**
      * @param start 开始时间
      * @param end   结束时间
-     * @throws IllegalArgumentException 当start, end不满足0 <= start < end时
+     * @throws IllegalArgumentException 当start, end不满足0 <= start <= end时
      */
     public Interval(long start, long end) {
         this.start = start;
@@ -41,11 +41,13 @@ class Interval implements Comparable<Interval> {
      *
      * @param start 开始时间
      * @param end   结束时间
-     * @throws IllegalArgumentException 当start, end不满足0 <= start < end时
+     * @throws IllegalArgumentException 当start, end不满足0 <= start <= end时
      */
     public static void validInterval(long start, long end) {
-        if (start < 0 || start >= end)
-            throw new IllegalArgumentException();
+        if (start < 0)
+            throw new IllegalArgumentException("start >= 0 is needed");
+        else if (start > end)
+            throw new IllegalArgumentException("start <= end is needed");
     }
 
     public long getStart() {
