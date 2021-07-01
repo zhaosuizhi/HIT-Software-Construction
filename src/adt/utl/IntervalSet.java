@@ -65,6 +65,14 @@ public abstract class IntervalSet<L> {
     abstract public long end(L label);
 
     /**
+     * 获取指定时刻的标签
+     *
+     * @param time 时刻
+     * @return 对应时刻的标签；不存在返回null
+     */
+    abstract public L getLabelByTime(long time);
+
+    /**
      * 获得标签对应的时间段
      * <p>包内其它类可使用，方便利用{@link Interval}获取值
      *

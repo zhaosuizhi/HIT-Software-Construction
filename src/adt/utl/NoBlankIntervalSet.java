@@ -14,7 +14,6 @@ public class NoBlankIntervalSet<L> extends IntervalSetDecorator<L> {
 
     private final long maxTime; // 最大时刻
 
-
     /**
      * @param set     时间段集合
      * @param maxTime 最大时刻

@@ -45,23 +45,6 @@ public class DutyRosterApp {
     }
 
     /**
-     * 查看指定日期的值班人
-     *
-     * @param date 日期
-     * @return 值班人；未安排返回null
-     */
-    private Employee getDuty(LocalDate date) {
-        for (Employee e : dutySet.labels()) {
-            LocalDate start = dutySet.start(e);
-            LocalDate end = dutySet.end(e);
-            if (!start.isAfter(date) && !end.isBefore(date)) { // 找到当日值班人
-                return e;
-            }
-        }
-        return null;
-    }
-
-    /**
      * 返回指定时间段内的排班信息组成的字符串
      *
      * @param start 开始日期
@@ -78,7 +61,7 @@ public class DutyRosterApp {
                 .append("\n");
         for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
             sb.append(date);
-            Employee e = getDuty(date);
+            Employee e = dutySet.getEmployeeByDate(date);
             if (e != null) {
                 sb.append("   ")
                         .append(String.format("%-10s ", e.getName())).append(" ")
@@ -224,7 +207,7 @@ public class DutyRosterApp {
      * 在控制台输出排班的完成率
      */
     public void finishRate() {
-        long blankCNT = dutySet.countUnarrangedDate();
+        long blankCNT = dutySet.countUnscheduledDate();
         long days = startDate.until(endDate, ChronoUnit.DAYS) + 1;
         double rate = (double) (days - blankCNT) / days * 100;
         System.out.printf("完成率%.2f%%，", rate);
@@ -317,13 +300,14 @@ public class DutyRosterApp {
         LocalDate endDate;
 
         // 设定排班日期
-        System.out.println("排班开始日期：");
+        System.out.print("排班开始日期：");
         startDate = LocalDate.parse(scanner.nextLine());
-        System.out.println("排班结束日期：");
+        System.out.print("排班结束日期：");
         endDate = LocalDate.parse(scanner.nextLine());
 
         // 初始化APP
         DutyRosterApp app = new DutyRosterApp(startDate, endDate);
+        System.out.println();
 
         int num; // 操作编号
         while ((num = menu(scanner)) != 0) {
@@ -336,21 +320,27 @@ public class DutyRosterApp {
                         break;
                     case 2:
                         app.addDuty();
+                        System.out.println();
                         break;
                     case 3:
                         app.askNameAndCall(DutyRosterApp.class.getMethod("removeDuty"));
+                        System.out.println();
                         break;
                     case 4:
                         app.askNameAndCall(DutyRosterApp.class.getMethod("addEmployee"));
+                        System.out.println();
                         break;
                     case 5:
                         app.askNameAndCall(DutyRosterApp.class.getMethod("removeEmployee"));
+                        System.out.println();
                         break;
                     case 6:
                         app.randomGenerate();
+                        System.out.println();
                         break;
                     default:
                         System.out.println("输入错误！");
+                        System.out.println();
                 }
             } catch (Exception e) {
                 e.printStackTrace();

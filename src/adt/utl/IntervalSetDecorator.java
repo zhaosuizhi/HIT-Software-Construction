@@ -40,6 +40,11 @@ public abstract class IntervalSetDecorator<L> extends IntervalSet<L> {
     }
 
     @Override
+    public L getLabelByTime(long time) {
+        return set.getLabelByTime(time);
+    }
+
+    @Override
     protected Interval interval(L label) {
         return set.interval(label);
     }

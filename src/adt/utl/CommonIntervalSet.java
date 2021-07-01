@@ -78,6 +78,15 @@ public class CommonIntervalSet<L> extends IntervalSet<L> {
     }
 
     @Override
+    public L getLabelByTime(long time) {
+        for (L label : intervalMap.keySet()) {
+            if (intervalMap.get(label).contains(time))
+                return label;
+        }
+        return null;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
