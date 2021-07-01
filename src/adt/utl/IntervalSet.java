@@ -3,9 +3,10 @@ package adt.utl;
 import java.util.Set;
 
 /**
- * 一组在时间轴上分布的时间段（interval）构成成的集合
+ * 一组在时间轴上分布的时间段（interval）构成的集合
  * <p>Mutable
  * <p>每个时间段附着一个特定的标签，且标签不重复
+ * <p>时间段可存在冲突
  *
  * @param <L> 时间段标签的类型
  */
@@ -27,7 +28,7 @@ public abstract class IntervalSet<L> {
      * @param start 开始时间
      * @param end   结束时间
      * @param label 标签
-     * @return 是否添加成功，若失败说明存在冲突
+     * @return 是否添加成功，若失败说明标签已存在
      * @throws NullPointerException     当label == null时
      * @throws IllegalArgumentException 当start, end不满足0 <= start <= end时
      */

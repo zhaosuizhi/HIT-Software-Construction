@@ -2,6 +2,7 @@ package adt;
 
 import adt.utl.IntervalSet;
 import adt.utl.NoBlankIntervalSet;
+import adt.utl.NonOverlapIntervalSet;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -14,7 +15,8 @@ import java.util.Set;
  * @param <L> 表示员工的类型
  */
 public class DutyIntervalSet<L> {
-    private final NoBlankIntervalSet<L> set;
+
+    private final NoBlankIntervalSet<L> set; // 非空、无冲突的时间段集合
     private final LocalDate startDate;
 
     /**
@@ -23,7 +25,7 @@ public class DutyIntervalSet<L> {
      */
     public DutyIntervalSet(LocalDate startDate, LocalDate endDate) {
         this.startDate = startDate;
-        set = new NoBlankIntervalSet<>(IntervalSet.empty(), date2offset(endDate));
+        set = new NoBlankIntervalSet<>(new NonOverlapIntervalSet<>(IntervalSet.empty()), date2offset(endDate));
     }
 
     /**

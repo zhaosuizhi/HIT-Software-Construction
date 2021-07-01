@@ -11,17 +11,13 @@ public class CommonIntervalSet<L> extends IntervalSet<L> {
     // 抽象函数:
     //   AF(intervalMap) = intervalMap是一个“标签->时间段”的满射
     // 表示不变量:
-    //   intervalMap中的每个Interval两两不相等
+    //   intervalMap中的标签互斥
     // 防止表示暴露:
     //   intervalMap为private final，无法修改引用
     //   在labels()方法中返回的值是可变类型，在返回时进行防御性复制
     //   其余方法中返回的均是不可变类型，不会发生表示暴露
 
     private void checkRep() {
-        Collection<Interval> intervals = intervalMap.values();
-        Set<Interval> set = new HashSet<>(intervals);
-
-        assert intervals.size() == set.size();
     }
 
     @Override
@@ -31,9 +27,8 @@ public class CommonIntervalSet<L> extends IntervalSet<L> {
 
         Interval interval = new Interval(start, end);
 
-        if (intervalMap.containsKey(label)  // 标签已经被添加过
-                || intervalMap.containsValue(interval)) // 或时间段冲突
-            return false; // 不予添加
+        if (intervalMap.containsKey(label))  // 标签已经被添加过，失败
+            return false;
 
         intervalMap.put(label, interval);
 

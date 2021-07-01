@@ -20,9 +20,6 @@ public class IntervalSetTest {
         // 插入相同标签
         Assert.assertFalse(intervalSet.insert(5, 6, "a"));
 
-        // 插入冲突时间段
-        Assert.assertFalse(intervalSet.insert(1, 3, "c"));
-
         // 插入非法时间段
         Assert.assertThrows(IllegalArgumentException.class, () -> intervalSet.insert(1, 0, "c"));
         Assert.assertThrows(IllegalArgumentException.class, () -> intervalSet.insert(1, 0, "c"));
