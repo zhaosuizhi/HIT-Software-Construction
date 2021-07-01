@@ -8,7 +8,7 @@ import java.util.Set;
  * @param <L> 时间段标签的类型
  */
 public class MultiIntervalSetDecorator<L> implements MultiIntervalSet<L> {
-    MultiIntervalSet<L> set;
+    protected final MultiIntervalSet<L> set;
 
     public MultiIntervalSetDecorator(MultiIntervalSet<L> set) {
         this.set = set;

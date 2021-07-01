@@ -301,12 +301,14 @@ public class DutyRosterApp {
         System.out.println("6. 随机生成排班表");
         System.out.println("0. 退出");
 
+        int choice;
         try {
-            return scanner.nextInt();
+            choice = scanner.nextInt();
         } catch (InputMismatchException e) {
-            scanner.nextLine();
-            return -1;
+            choice = -1;
         }
+        scanner.nextLine();
+        return choice;
     }
 
     public static void main(String[] args) {

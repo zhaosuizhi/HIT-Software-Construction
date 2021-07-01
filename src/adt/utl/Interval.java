@@ -6,7 +6,7 @@ import java.util.Objects;
 /**
  * 一个时间段
  * <p>Immutable
- * <p>要求时间点均为非负整数且长度大于0，否则将在构造函数抛出{@link IllegalArgumentException}
+ * <p>要求时间点均为非负整数且长度>=0，否则将在构造函数抛出{@link IllegalArgumentException}
  * <p>时间段可比较。定义时间段有重合为相等，否则靠前的时间段小于靠后的时间段。
  */
 class Interval implements Comparable<Interval> {
@@ -56,6 +56,16 @@ class Interval implements Comparable<Interval> {
 
     public long getEnd() {
         return end;
+    }
+
+    /**
+     * 判断给定时刻是否在当前时间段中
+     *
+     * @param time 时刻
+     * @return 当前时间段是否包含该时刻
+     */
+    public boolean contains(long time) {
+        return start <= time && time <= end;
     }
 
     /**
