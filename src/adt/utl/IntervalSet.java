@@ -74,7 +74,7 @@ public abstract class IntervalSet<L> {
 
     /**
      * 获得标签对应的时间段
-     * <p>包内其它类可使用，方便利用{@link Interval}获取值
+     * <p>供{@link adt.utl}内的其它类可使用，方便利用{@link Interval}获取值
      *
      * @param label 标签
      * @return 对应的时间段；若不存在返回null

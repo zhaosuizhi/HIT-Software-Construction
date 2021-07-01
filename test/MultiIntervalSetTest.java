@@ -11,6 +11,23 @@ import java.util.HashSet;
 public class MultiIntervalSetTest {
 
     @Test
+    public void similarityTest() {
+        MultiIntervalSet<String> set1 = MultiIntervalSet.empty();
+        MultiIntervalSet<String> set2 = MultiIntervalSet.empty();
+
+        set1.insert(0, 5, "A");
+        set1.insert(20, 25, "A");
+        set1.insert(10, 20, "B");
+        set1.insert(25, 30, "B");
+
+        set2.insert(20, 35, "A");
+        set2.insert(10, 20, "B");
+        set2.insert(0, 5, "C");
+
+        Assert.assertEquals(0.42857, MultiIntervalSet.similarity(set1, set2), 0.001);
+    }
+
+    @Test
     public void constructorTest() {
         // 测试工厂方法
         MultiIntervalSet.empty();

@@ -52,7 +52,7 @@ public class NoBlankIntervalSet<L> extends IntervalSetDecorator<L> {
 
         // 遍历时间段，将每个时间段的长度从空白时间数中扣除
         for (Interval interval : intervalList) {
-            blankCNT -= interval.getEnd() - interval.getStart() + 1;
+            blankCNT -= interval.getLength();
         }
 
         return blankCNT;

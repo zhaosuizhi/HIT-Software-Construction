@@ -50,12 +50,54 @@ class Interval implements Comparable<Interval> {
             throw new IllegalArgumentException("start <= end is needed");
     }
 
+    /**
+     * 获取时间段的开始时间
+     *
+     * @return 开始时间
+     */
     public long getStart() {
         return start;
     }
 
+    /**
+     * 获取时间段的结束时间
+     *
+     * @return 结束时间
+     */
     public long getEnd() {
         return end;
+    }
+
+    /**
+     * 获取时间段占据的单位时间段数
+     *
+     * @return 时间段长度(> = 1)
+     */
+    public long getLength() {
+        return end - start + 1;
+    }
+
+    /**
+     * 求与另一时间段重合部分的时间段
+     *
+     * @param other 另一时间段
+     * @return 重合部分的时间段；若无重合，返回null
+     */
+    public Interval overlap(Interval other) {
+        /* 首先根据end比较大小 */
+        Interval bigger, smaller;
+        if (this.end > other.end) {
+            bigger = this;
+            smaller = other;
+        } else {
+            bigger = other;
+            smaller = this;
+        }
+
+        if (bigger.start < smaller.end) // 时间段有重叠
+            return new Interval(bigger.start, smaller.end);
+        else // 时间段无重叠
+            return null;
     }
 
     /**
@@ -73,20 +115,10 @@ class Interval implements Comparable<Interval> {
      */
     @Override
     public int compareTo(Interval other) {
-        /* 首先根据end比较大小 */
-        Interval bigger, smaller;
-        if (this.end > other.end) {
-            bigger = this;
-            smaller = other;
-        } else {
-            bigger = other;
-            smaller = this;
-        }
-
-        if (bigger.start < smaller.end) // 时间段有重叠
-            return 0;
-        else // 时间段无重叠，简单判断即可
+        if (overlap(other) == null)
             return this.start < other.start ? -1 : 1;
+        else
+            return 0;
     }
 
     @Override
