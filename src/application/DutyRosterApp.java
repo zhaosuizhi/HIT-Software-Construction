@@ -3,11 +3,14 @@ package application;
 import adt.DutyIntervalSet;
 import io.RobustScanner;
 
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 排班管理系统
@@ -250,6 +253,158 @@ public class DutyRosterApp {
     }
 
     /**
+     * 从文件中载入一个新的{@link DutyRosterApp}对象
+     *
+     * @return 新的值班表对象；若发生异常，返回原对象
+     */
+    public DutyRosterApp loadFromFile() {
+        System.out.print("请输入文件位置：");
+        String fileName = scanner.nextNotEmptyString("文件路径");
+
+        File file = new File(fileName);
+        FileInputStream in;
+        StringBuilder sb = new StringBuilder();
+
+        try { // 打开文件
+            in = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            System.out.println("未找到文件！");
+            return this;
+        }
+        try { // 读入文件
+            Scanner scanner = new Scanner(in);
+            while (true) {
+                String line = scanner.nextLine();
+                if (line == null)
+                    break;
+
+                int index = line.indexOf("//"); // 删除注释
+                if (index != -1)
+                    line = line.substring(0, index);
+                sb.append(line.trim());
+            }
+        } catch (NoSuchElementException ignored) {
+        }
+        try { // 关闭文件
+            in.close();
+        } catch (IOException e) {
+            System.out.println("文件关闭异常！");
+            return this;
+        }
+
+        String text = sb.toString(); // 文件内的全部内容
+        DutyRosterApp newApp;
+
+        final String datePattern = "[0-9]{4}-(((0[13578]|(10|12))-(0[1-9]|[1-2][0-9]|3[0-1]))|(02-(0[1-9]|[1-2][0-9]))|((0[469]|11)-(0[1-9]|[1-2][0-9]|30)))";
+        final String namePattern = "[A-Za-z]+";
+        final String jobPattern = "[A-Za-z ]+";
+        final String phonePattern = "1[3-9][0-9]-[0-9]{4}-[0-9]{4}";
+
+        Pattern r;
+        Matcher m;
+
+        /* 首先匹配起止日期 */
+        r = Pattern.compile("Period\\{(" + datePattern + "),(" + datePattern + ")}");
+        m = r.matcher(text);
+        if (m.find()) {
+            newApp = new DutyRosterApp(scanner, LocalDate.parse(m.group(1)), LocalDate.parse(m.group(12)));
+        } else {
+            System.out.println("文件格式有误！");
+            return this;
+        }
+
+        /* 然后匹配员工信息 */
+        int startIndex = text.indexOf("Employee");
+        if (startIndex == -1) {
+            System.out.println("未找到Employee字段，终止导入！");
+            return this;
+        }
+        int endIndex = matchBrace(text, startIndex + "Employee".length());
+        if (endIndex == -1) {
+            System.out.println("格式有误，终止导入！");
+            return this;
+        }
+        String employeeText = text.substring(startIndex, endIndex + 1);
+        r = Pattern.compile("(" + namePattern + ")\\{(" + jobPattern + "),(" + phonePattern + ")}");
+        m = r.matcher(employeeText);
+        while (m.find()) {
+            String name = m.group(1);
+            String job = m.group(2);
+            String phone = m.group(3);
+            Employee employee = new Employee(name, job, phone);
+            if (!newApp.employeeSet.add(employee)) {
+                System.out.println("员工存在重复，终止导入！");
+                return this;
+            }
+        }
+
+        /* 最后匹配值班信息 */
+        startIndex = text.indexOf("Roster");
+        if (startIndex == -1) {
+            System.out.println("未找到Employee字段，终止导入！");
+            return this;
+        }
+        endIndex = matchBrace(text, startIndex + "Roster".length());
+        if (endIndex == -1) {
+            System.out.println("格式有误，终止导入！");
+            return this;
+        }
+        String rosterText = text.substring(startIndex, endIndex + 1);
+        r = Pattern.compile("(" + namePattern + ")\\{(" + datePattern + "),(" + datePattern + ")}");
+        m = r.matcher(rosterText);
+        while (m.find()) {
+            String name = m.group(1);
+            LocalDate startDate = LocalDate.parse(m.group(2));
+            LocalDate endDate = LocalDate.parse(m.group(13));
+
+            Employee employee = newApp.getEmployeeByName(name); // 查找员工
+            if (employee == null) {
+                System.out.println("员工" + name + "已排班但不存在，终止导入！");
+                return this;
+            }
+            if (startDate.isAfter(endDate)) { // 验证日期
+                System.out.println("排班时间有误，终止导入！");
+                return this;
+            }
+            if (!newApp.dutySet.add(startDate, endDate, employee)) { // 添加排班
+                System.out.println("排班存在冲突，终止导入！");
+                return this;
+            }
+        }
+
+        return newApp;
+    }
+
+    /**
+     * 给定一个字符串的左括号，返回右括号下标
+     *
+     * @param text  字符串
+     * @param start 左括号下标
+     * @return 右括号下标；如果start不指向左括号或无法匹配右括号，返回-1
+     */
+    private static int matchBrace(String text, int start) {
+        if (text.charAt(start) != '{')
+            return -1;
+
+        final int length = text.length();
+        int counter = 1; // 左括号计数器，为0时说明匹配
+        for (int i = start + 1; i < length; i++) {
+            switch (text.charAt(i)) {
+                case '{':
+                    counter++;
+                    break;
+                case '}':
+                    counter--;
+                    if (counter == 0)
+                        return i;
+                    break;
+            }
+        }
+
+        return -1;
+    }
+
+    /**
      * 首先打印要求用户输入姓名的信息，然后调用相应方法
      *
      * @param method 方法
@@ -278,6 +433,7 @@ public class DutyRosterApp {
         System.out.println("4. 添加人员");
         System.out.println("5. 删除人员");
         System.out.println("6. 随机生成排班表");
+        System.out.println("7. 从文件导入");
         System.out.println("0. 退出");
 
         return scanner.nextInt();
@@ -325,6 +481,10 @@ public class DutyRosterApp {
                         break;
                     case 6:
                         app.randomGenerate();
+                        System.out.println();
+                        break;
+                    case 7:
+                        app = app.loadFromFile();
                         System.out.println();
                         break;
                     default:
