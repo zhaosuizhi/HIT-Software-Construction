@@ -28,7 +28,7 @@ public class CourseScheduleApp {
     /**
      * 查看某一天的课表
      */
-    void watch() {
+    void watchSchedule() {
         System.out.print("请输入要查看的日期：");
         LocalDate date = scanner.nextDate();
 
@@ -56,9 +56,31 @@ public class CourseScheduleApp {
     }
 
     /**
+     * 查看当前状态
+     */
+    void watchRate() {
+        System.out.printf("空闲比例：%.2f%%%n", set.unscheduledRate());
+        System.out.printf("重复比例：%.2f%%%n", set.overlapRate());
+    }
+
+    /**
+     * 查看尚未安排的课程
+     */
+    void watchLeftCourses() {
+        System.out.println("课程ID  课程名      教师名   上课地点  剩余学时数");
+        for (Course c : courseSet) {
+            if (c.hasHoursLeft()) {
+                System.out.printf("%-7d %-7s %-6s %-9s %d%n",
+                        c.getId(), c.getName(), c.getTeacher(), c.getPlace(), c.getHoursLeft()
+                );
+            }
+        }
+    }
+
+    /**
      * 安排一次课
      */
-    void schedule() {
+    void addSchedule() {
         System.out.print("请输入要安排的课程ID：");
         int id = scanner.nextInt();
 
@@ -166,8 +188,10 @@ public class CourseScheduleApp {
      */
     public int menu() {
         System.out.println("1. 查看某一天的课表");
-        System.out.println("2. 安排一次课");
-        System.out.println("3. 添加课程");
+        System.out.println("2. 查看空闲与重复的比例");
+        System.out.println("3. 查看未安排完毕的课程");
+        System.out.println("4. 安排一次课");
+        System.out.println("5. 添加课程");
         System.out.println("0. 退出");
 
         return scanner.nextInt();
@@ -195,14 +219,22 @@ public class CourseScheduleApp {
             try {
                 switch (num) {
                     case 1:
-                        app.watch();
+                        app.watchSchedule();
                         System.out.println();
                         break;
                     case 2:
-                        app.schedule();
+                        app.watchRate();
                         System.out.println();
                         break;
                     case 3:
+                        app.watchLeftCourses();
+                        System.out.println();
+                        break;
+                    case 4:
+                        app.addSchedule();
+                        System.out.println();
+                        break;
+                    case 5:
                         app.addCourse();
                         System.out.println();
                         break;
@@ -289,6 +321,15 @@ class Course {
      */
     public String getPlace() {
         return place;
+    }
+
+    /**
+     * 获取课程剩余学时数
+     *
+     * @return 剩余学时数
+     */
+    public long getHoursLeft() {
+        return hours;
     }
 
     /**

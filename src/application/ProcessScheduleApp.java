@@ -4,7 +4,10 @@ import adt.ProcessIntervalSet;
 import adt.utl.MultiIntervalSet;
 import io.RobustScanner;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Scanner;
 
 public class ProcessScheduleApp {
 

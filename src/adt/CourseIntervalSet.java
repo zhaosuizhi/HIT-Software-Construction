@@ -122,4 +122,13 @@ public class CourseIntervalSet<L> {
     public double unscheduledRate() {
         return set.blankRate();
     }
+
+    /**
+     * 统计课程间冲突的比例
+     *
+     * @return 重复比例
+     */
+    public double overlapRate() {
+        return set.overlapRate();
+    }
 }

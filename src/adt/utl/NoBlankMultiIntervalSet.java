@@ -1,7 +1,5 @@
 package adt.utl;
 
-import java.util.Set;
-
 public class NoBlankMultiIntervalSet<L> extends MultiIntervalSetDecorator<L> implements NoBlankSet {
 
     private final long maxTime;
@@ -50,6 +48,27 @@ public class NoBlankMultiIntervalSet<L> extends MultiIntervalSetDecorator<L> imp
             if (!found)
                 blankCNT++;
         }
-        return (double) blankCNT / maxTime;
+        return (double) blankCNT / (maxTime + 1) * 100;
+    }
+
+    /**
+     * 统计冲突的比例
+     *
+     * @return 冲突比例
+     */
+    public double overlapRate() {
+        long overlapCNT = 0;
+        for (long i = 0; i <= maxTime; i++) {
+            boolean found = false;
+            for (L label : set.labels()) {
+                IntervalSet<Integer> intervalSet = set.intervals(label);
+                if (intervalSet.getLabelByTime(i) != null) {
+                    if (found) // 发生重复
+                        overlapCNT++;
+                    found = true;
+                }
+            }
+        }
+        return (double) overlapCNT / (maxTime + 1) * 100;
     }
 }

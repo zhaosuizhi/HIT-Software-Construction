@@ -1,6 +1,6 @@
 package adt.utl;
 
-import java.util.*;
+import java.util.Set;
 
 /**
  * 一组在时间轴上分布的时间段（interval）构成成的集合，
