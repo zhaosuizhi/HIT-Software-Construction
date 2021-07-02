@@ -1,6 +1,4 @@
 import adt.CourseIntervalSet;
-import adt.utl.MultiIntervalSet;
-import adt.utl.NoBlankMultiIntervalSet;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -67,27 +65,28 @@ public class CourseIntervalSetTest {
 
     @Test
     public void blankRateTest() {
-        NoBlankMultiIntervalSet<String> set = new NoBlankMultiIntervalSet<>(MultiIntervalSet.empty(), 9);
-        set.insert(0, 1, "a");
-        Assert.assertEquals(80.0, set.blankRate(), 0.001);
-        set.insert(0, 2, "b");
-        Assert.assertEquals(70.0, set.blankRate(), 0.001);
-        set.insert(1, 4, "c");
-        Assert.assertEquals(50.0, set.blankRate(), 0.001);
-        set.insert(3, 9, "a");
-        Assert.assertEquals(0.0, set.blankRate(), 0.001);
+        CourseIntervalSet<String> set = new CourseIntervalSet<>(LocalDate.parse("2021-01-01"), 1);
+        set.add(LocalDate.parse("2021-01-01"), 0, "a");
+        set.add(LocalDate.parse("2021-01-01"), 1, "a");
+        set.add(LocalDate.parse("2021-01-01"), 2, "a");
+        set.add(LocalDate.parse("2021-01-01"), 3, "a");
+        set.add(LocalDate.parse("2021-01-01"), 4, "a");
+        Assert.assertEquals(6.0 / 7 * 100, set.unscheduledRate(), 0.001);
+
+        set.add(LocalDate.parse("2021-01-01"), 0, "b");
+        set.add(LocalDate.parse("2021-01-01"), 1, "c");
+        set.add(LocalDate.parse("2021-01-01"), 4, "d");
+        Assert.assertEquals(6.0 / 7 * 100, set.unscheduledRate(), 0.001);
     }
 
     @Test
     public void overlapRateTest() {
-        NoBlankMultiIntervalSet<String> set = new NoBlankMultiIntervalSet<>(MultiIntervalSet.empty(), 9);
-        set.insert(0, 1, "a");
+        CourseIntervalSet<String> set = new CourseIntervalSet<>(LocalDate.parse("2021-01-01"), 1);
+        set.add(LocalDate.parse("2021-01-01"), 1, "a");
         Assert.assertEquals(0.0, set.overlapRate(), 0.001);
-        set.insert(0, 2, "b");
-        Assert.assertEquals(20.0, set.overlapRate(), 0.001);
-        set.insert(1, 4, "c");
-        Assert.assertEquals(30.0, set.overlapRate(), 0.001);
-        set.insert(3, 9, "a");
-        Assert.assertEquals(50.0, set.overlapRate(), 0.001);
+        set.add(LocalDate.parse("2021-01-01"), 2, "b");
+        Assert.assertEquals(0.0, set.overlapRate(), 0.001);
+        set.add(LocalDate.parse("2021-01-01"), 1, "b");
+        Assert.assertEquals(2.857, set.overlapRate(), 0.001);
     }
 }
