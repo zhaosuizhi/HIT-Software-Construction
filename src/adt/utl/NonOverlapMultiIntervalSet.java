@@ -44,8 +44,12 @@ public class NonOverlapMultiIntervalSet<L> extends MultiIntervalSetDecorator<L> 
     @Override
     public boolean insert(long start, long end, L label) {
         Set<Interval> allI = allInterval();
-        if (allI.contains(new Interval(start, end)))
-            return false;
+
+        Interval newI = new Interval(start, end);
+        for (Interval i : allI)
+            if (i.equals(newI))
+                return false;
+
         return super.insert(start, end, label);
     }
 

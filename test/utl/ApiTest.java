@@ -1,3 +1,5 @@
+package utl;
+
 import adt.utl.Api;
 import adt.utl.IntervalSet;
 import adt.utl.MultiIntervalSet;
@@ -5,6 +7,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class ApiTest {
+
+    // 测试策略
+    //    构造输入，观察与期望输出是否一致
 
     @Test
     public void similarityTest() {

@@ -1,4 +1,6 @@
 import adt.CourseIntervalSet;
+import adt.utl.MultiIntervalSet;
+import adt.utl.NoBlankMultiIntervalSet;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -6,6 +8,38 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class CourseIntervalSetTest {
+
+    // 测试策略
+    //    测试CourseIntervalSet中的所有public方法
+    //    对于每个方法，划分等价类，每个等价类至少构造一个测试样例，对于频繁发生的情况，测试多组数据
+
+    @Test
+    public void dateInSemesterTest() {
+        CourseIntervalSet<String> set = new CourseIntervalSet<>(LocalDate.parse("2021-01-01"), 2);
+
+        // 属于这学期的日期
+        Assert.assertTrue(set.dateInSemester(LocalDate.parse("2021-01-01")));
+        Assert.assertTrue(set.dateInSemester(LocalDate.parse("2021-01-05")));
+        Assert.assertTrue(set.dateInSemester(LocalDate.parse("2021-01-12")));
+        Assert.assertTrue(set.dateInSemester(LocalDate.parse("2021-01-14")));
+
+        // 不属于这学期的日期
+        Assert.assertFalse(set.dateInSemester(LocalDate.parse("2020-12-31")));
+        Assert.assertFalse(set.dateInSemester(LocalDate.parse("2021-01-15")));
+    }
+
+    @Test
+    public void addTest() {
+        CourseIntervalSet<String> set = new CourseIntervalSet<>(LocalDate.parse("2021-01-01"), 2);
+
+        // 正确插入课程
+        Assert.assertTrue(set.add(LocalDate.parse("2021-01-01"), 1, "a"));
+        Assert.assertTrue(set.add(LocalDate.parse("2021-01-02"), 2, "a"));
+
+        // 插入非法课程
+        Assert.assertThrows(IllegalArgumentException.class, () -> set.add(LocalDate.parse("2021-01-10"), 5, "a"));
+        Assert.assertThrows(IllegalArgumentException.class, () -> set.add(LocalDate.parse("2021-01-10"), -1, "a"));
+    }
 
     @Test
     public void getDateScheduleTest() {
@@ -29,5 +63,31 @@ public class CourseIntervalSetTest {
         Assert.assertEquals(new HashSet<>(Collections.singletonList("computer")), res.get(2));
         Assert.assertTrue(res.get(3).isEmpty());
         Assert.assertTrue(res.get(4).isEmpty());
+    }
+
+    @Test
+    public void blankRateTest() {
+        NoBlankMultiIntervalSet<String> set = new NoBlankMultiIntervalSet<>(MultiIntervalSet.empty(), 9);
+        set.insert(0, 1, "a");
+        Assert.assertEquals(80.0, set.blankRate(), 0.001);
+        set.insert(0, 2, "b");
+        Assert.assertEquals(70.0, set.blankRate(), 0.001);
+        set.insert(1, 4, "c");
+        Assert.assertEquals(50.0, set.blankRate(), 0.001);
+        set.insert(3, 9, "a");
+        Assert.assertEquals(0.0, set.blankRate(), 0.001);
+    }
+
+    @Test
+    public void overlapRateTest() {
+        NoBlankMultiIntervalSet<String> set = new NoBlankMultiIntervalSet<>(MultiIntervalSet.empty(), 9);
+        set.insert(0, 1, "a");
+        Assert.assertEquals(0.0, set.overlapRate(), 0.001);
+        set.insert(0, 2, "b");
+        Assert.assertEquals(20.0, set.overlapRate(), 0.001);
+        set.insert(1, 4, "c");
+        Assert.assertEquals(30.0, set.overlapRate(), 0.001);
+        set.insert(3, 9, "a");
+        Assert.assertEquals(50.0, set.overlapRate(), 0.001);
     }
 }

@@ -28,14 +28,14 @@ public class CourseIntervalSet<L> {
     //       星期一的5个上课时间段分别对应时间段[0,0]，[1,1]，[2,2]，[3,3]，[4,4]，以此类推，直到一周的最后一节课[34,34]
     // 表示不变量:
     //   set != null
-    //   startDate与endDate相差34天
+    //   startDate与endDate相差的天数 mod 7 == 6
     // 防止表示暴露:
     //   LocalDate是Immutable类型，不会发生表示暴露
     //   各方法返回值或者是新申请的对象、或者委托给set
 
     private void checkRep() {
         assert set != null;
-        assert startDate.plusDays(34).equals(endDate);
+        assert startDate.until(endDate, ChronoUnit.DAYS) % 7 == 6;
     }
 
     /**

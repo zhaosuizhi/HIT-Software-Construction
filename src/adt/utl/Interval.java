@@ -94,7 +94,7 @@ class Interval implements Comparable<Interval> {
             smaller = this;
         }
 
-        if (bigger.start < smaller.end) // 时间段有重叠
+        if (bigger.start <= smaller.end) // 时间段有重叠
             return new Interval(bigger.start, smaller.end);
         else // 时间段无重叠
             return null;

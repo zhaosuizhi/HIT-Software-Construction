@@ -1,9 +1,5 @@
 package adt.utl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 /**
  * 无空白的时间轴
  * <p>调用{@link #blankRate()}方法可以获得时间轴上的空白比例
@@ -56,19 +52,10 @@ public class NoBlankIntervalSet<L> extends IntervalSetDecorator<L> implements No
 
     @Override
     public double blankRate() {
-        Set<L> labelSet = set.labels();
-        List<Interval> intervalList = new ArrayList<>();
-
-        // 提取出所有时间段，并排序
-        for (L label : labelSet) {
-            intervalList.add(set.interval(label));
-        }
-
-        long blankCNT = maxTime + 1;
-        // 遍历时间段，将每个时间段的长度从空白时间数中扣除
-        for (Interval interval : intervalList) {
-            blankCNT -= interval.getLength();
-        }
+        long blankCNT = 0;
+        for (long i = 0; i <= maxTime; i++)
+            if (set.getLabelByTime(i) == null)
+                blankCNT++;
 
         return (double) blankCNT / (maxTime + 1) * 100;
     }

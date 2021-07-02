@@ -1,3 +1,5 @@
+package utl;
+
 import adt.utl.IntervalSet;
 import org.junit.Assert;
 import org.junit.Test;
@@ -7,6 +9,11 @@ import java.util.Collections;
 import java.util.HashSet;
 
 public class IntervalSetTest {
+
+    // 测试策略
+    //    测试IntervalSet中的各个接口
+    //    对于每个接口，划分等价类，每个等价类至少构造一个测试样例，对于频繁发生的情况，测试多组数据
+
     @Test
     public void insertTest() {
         IntervalSet<String> intervalSet = IntervalSet.empty();

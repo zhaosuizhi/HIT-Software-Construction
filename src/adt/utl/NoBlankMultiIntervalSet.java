@@ -75,8 +75,10 @@ public class NoBlankMultiIntervalSet<L> extends MultiIntervalSetDecorator<L> imp
             for (L label : super.labels()) {
                 IntervalSet<Integer> intervalSet = super.intervals(label);
                 if (intervalSet.getLabelByTime(i) != null) {
-                    if (found) // 发生重复
+                    if (found) { // 发生重复
                         overlapCNT++;
+                        break;
+                    }
                     found = true;
                 }
             }

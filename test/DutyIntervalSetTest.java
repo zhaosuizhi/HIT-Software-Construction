@@ -7,6 +7,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 public class DutyIntervalSetTest {
+
+    // 测试策略
+    //    测试DutyIntervalSetSet中的所有public方法
+    //    对于每个方法，划分等价类，每个等价类至少构造一个测试样例，对于频繁发生的情况，测试多组数据
+
     @Test
     public void addTest() {
         LocalDate startDate = LocalDate.parse("2021-01-01");
