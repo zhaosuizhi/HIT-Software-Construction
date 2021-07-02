@@ -19,6 +19,21 @@ public class DutyIntervalSet<L> {
     private final NoBlankIntervalSet<L> set; // 非空、无冲突的时间段集合
     private final LocalDate startDate;
 
+    // 抽象函数:
+    //   AF(set, startDate) = 一张员工值班表，开始日期为startDate，结束日期endDate委托给set
+    //       set的时间单位表示startDate之后的天数，例如set中0时间表示startDate当天，1表示startDate的下一天
+    // 表示不变量:
+    //   set != null
+    //   startDate != null
+    // 防止表示暴露:
+    //   LocalDate是Immutable类型，不会发生表示暴露
+    //   各方法返回值或者是新申请的对象、或者委托给set
+
+    private void checkRep() {
+        assert set != null;
+        assert startDate != null;
+    }
+
     /**
      * @param startDate 开始日期
      * @param endDate   结束日期
@@ -26,6 +41,7 @@ public class DutyIntervalSet<L> {
     public DutyIntervalSet(LocalDate startDate, LocalDate endDate) {
         this.startDate = startDate;
         set = new NoBlankIntervalSet<>(new NonOverlapIntervalSet<>(IntervalSet.empty()), date2offset(endDate));
+        checkRep();
     }
 
     /**

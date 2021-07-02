@@ -13,6 +13,10 @@ import java.util.Set;
  */
 public class ProcessIntervalSet<L> extends NonOverlapMultiIntervalSet<L> {
 
+    // 无额外成员变量，因此AF与RI同父类
+    // 防止表示暴露:
+    //   均委托给NonOverlapMultiIntervalSet类
+
     public ProcessIntervalSet(MultiIntervalSet<L> set) {
         super(set);
     }

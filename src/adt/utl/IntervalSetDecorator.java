@@ -10,8 +10,20 @@ import java.util.Set;
 public abstract class IntervalSetDecorator<L> extends IntervalSet<L> {
     protected final IntervalSet<L> set;
 
+    // 抽象函数:
+    //   AF(set) = set是一个“标签->时间段”的满射
+    // 表示不变量:
+    //   set != null
+    // 防止表示暴露:
+    //   本类中的所有方法均委托给set中的相应方法，因此防止表示暴露由set负责
+
+    private void checkRep() {
+        assert set != null;
+    }
+
     protected IntervalSetDecorator(IntervalSet<L> set) {
         this.set = set;
+        checkRep();
     }
 
     @Override

@@ -7,12 +7,25 @@ import java.util.Scanner;
 
 /**
  * 具有一定健壮性的输入流
+ * <p>Mutable
  */
 public class RobustScanner {
     private final Scanner scanner;
 
+    // 抽象函数:
+    //   AF(scanner) = 输入流为scanner，在出错时进行更加友好的反馈
+    // 表示不变量:
+    //   scanner != null
+    // 防止表示暴露:
+    //   返回值均来自scanner的方法，因此防止表示暴露由Scanner类保证
+
+    private void checkRep() {
+        assert scanner != null;
+    }
+
     public RobustScanner(Scanner scanner) {
         this.scanner = scanner;
+        checkRep();
     }
 
     public String nextLine() {

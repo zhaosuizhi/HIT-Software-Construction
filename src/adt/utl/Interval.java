@@ -18,7 +18,7 @@ class Interval implements Comparable<Interval> {
     // 表示不变量:
     //   0 <= start <= end
     // 防止表示暴露:
-    //   start和end均为private final，Long是不可变类型，故无法在初始化后被直接访问和修改
+    //   start和end均为private final，long是基础类型，故无法在初始化后被直接访问和修改
 
     /**
      * @param start 开始时间

@@ -118,7 +118,16 @@ public class CommonMultiIntervalSet<L> implements MultiIntervalSet<L> {
  * @param <L>标签类型
  */
 final class LabelIdGenerator<L> {
+
     private final Map<L, Integer> labelIdMap = new HashMap<>();
+
+    // 抽象函数:
+    //   AF(labelIdMap) = labelIdMap是一个“标签->最大ID”的映射。ID初值为1，每返回一次ID，相应ID就自增1。以此形成不重复的自增序列
+    // 表示不变量:
+    //   labelIdMap != null，已由new语句和final限定符保证，无需额外checkRep
+    // 防止表示暴露:
+    //   labelIdMap是private类型
+    //   返回值均不可变
 
     /**
      * 获取标签的下一个id

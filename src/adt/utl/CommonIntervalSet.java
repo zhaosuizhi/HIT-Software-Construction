@@ -11,7 +11,8 @@ public class CommonIntervalSet<L> extends IntervalSet<L> {
     // 抽象函数:
     //   AF(intervalMap) = intervalMap是一个“标签->时间段”的满射
     // 表示不变量:
-    //   intervalMap中的标签互斥
+    //   intervalMap != null
+    //   该不变量已被new语句和final限定符所保证，因此无需在checkRep函数中检查
     // 防止表示暴露:
     //   intervalMap为private final，无法修改引用
     //   在labels()方法中返回的值是可变类型，在返回时进行防御性复制

@@ -2,7 +2,18 @@ package adt.utl;
 
 public class NoBlankMultiIntervalSet<L> extends MultiIntervalSetDecorator<L> implements NoBlankSet {
 
+    // 抽象函数:
+    //   AF(maxTime) = 整个时间段中的最大有效时间为maxTime
+    // 表示不变量:
+    //   maxTime >= 0
+    // 防止表示暴露:
+    //   maxTime为private final，无法修改引用
+
     private final long maxTime;
+
+    private void checkRep() {
+        assert maxTime >= 0;
+    }
 
     /**
      * 最大时间
@@ -13,6 +24,7 @@ public class NoBlankMultiIntervalSet<L> extends MultiIntervalSetDecorator<L> imp
     public NoBlankMultiIntervalSet(MultiIntervalSet<L> set, long maxTime) {
         super(set);
         this.maxTime = maxTime;
+        checkRep();
     }
 
     /**
@@ -38,8 +50,8 @@ public class NoBlankMultiIntervalSet<L> extends MultiIntervalSetDecorator<L> imp
         long blankCNT = 0;
         for (long i = 0; i <= maxTime; i++) {
             boolean found = false;
-            for (L label : set.labels()) {
-                IntervalSet<Integer> intervalSet = set.intervals(label);
+            for (L label : super.labels()) {
+                IntervalSet<Integer> intervalSet = super.intervals(label);
                 if (intervalSet.getLabelByTime(i) != null) {
                     found = true;
                     break;
@@ -60,8 +72,8 @@ public class NoBlankMultiIntervalSet<L> extends MultiIntervalSetDecorator<L> imp
         long overlapCNT = 0;
         for (long i = 0; i <= maxTime; i++) {
             boolean found = false;
-            for (L label : set.labels()) {
-                IntervalSet<Integer> intervalSet = set.intervals(label);
+            for (L label : super.labels()) {
+                IntervalSet<Integer> intervalSet = super.intervals(label);
                 if (intervalSet.getLabelByTime(i) != null) {
                     if (found) // 发生重复
                         overlapCNT++;

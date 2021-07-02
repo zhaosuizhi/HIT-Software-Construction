@@ -10,14 +10,10 @@ import java.util.Set;
  */
 public class NonOverlapIntervalSet<L> extends IntervalSetDecorator<L> {
 
-    // 抽象函数:
-    //   AF(intervalMap) = intervalMap是一个“标签->时间段”的满射
-    // 表示不变量:
-    //   intervalMap中的每个Interval两两不相等
+    // 无额外成员变量，因此AF与RI同父类
     // 防止表示暴露:
-    //   intervalMap为private final，无法修改引用
-    //   在labels()方法中返回的值是可变类型，在返回时进行防御性复制
-    //   其余方法中返回的均是不可变类型，不会发生表示暴露
+    //   insert方法没有返回内部变量的地方，因此不会发生表示暴露
+    //   其余方法由父类负责
 
     private void checkRep() {
         Set<Interval> intervals = new HashSet<>();

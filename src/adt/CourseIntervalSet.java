@@ -22,6 +22,22 @@ public class CourseIntervalSet<L> {
     private final LocalDate startDate;
     private final LocalDate endDate;
 
+    // 抽象函数:
+    //   AF(set, startDate, endDate) = 一个学期的课程安排，学期日期范围[startDate, endDate]
+    //       set的时间范围为[0, 34]，代表一周的每天5个、一周7天、共35个上课时间段
+    //       星期一的5个上课时间段分别对应时间段[0,0]，[1,1]，[2,2]，[3,3]，[4,4]，以此类推，直到一周的最后一节课[34,34]
+    // 表示不变量:
+    //   set != null
+    //   startDate与endDate相差34天
+    // 防止表示暴露:
+    //   LocalDate是Immutable类型，不会发生表示暴露
+    //   各方法返回值或者是新申请的对象、或者委托给set
+
+    private void checkRep() {
+        assert set != null;
+        assert startDate.plusDays(34).equals(endDate);
+    }
+
     /**
      * 判断给定日期是否在当前学期中
      *
@@ -46,6 +62,8 @@ public class CourseIntervalSet<L> {
 
         this.startDate = startDate;
         this.endDate = startDate.plusDays(weekCNT * 7).minusDays(1); // 持续到最后一周周日
+
+        checkRep();
     }
 
     /**

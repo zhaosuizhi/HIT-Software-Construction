@@ -14,6 +14,17 @@ public class NoBlankIntervalSet<L> extends IntervalSetDecorator<L> implements No
 
     private final long maxTime; // 最大时刻
 
+    // 抽象函数:
+    //   AF(maxTime) = 整个时间段中的最大有效时间为maxTime
+    // 表示不变量:
+    //   maxTime >= 0
+    // 防止表示暴露:
+    //   maxTime为private final，无法修改引用
+
+    private void checkRep() {
+        assert maxTime >= 0;
+    }
+
     /**
      * @param set     时间段集合
      * @param maxTime 最大时刻
@@ -21,6 +32,7 @@ public class NoBlankIntervalSet<L> extends IntervalSetDecorator<L> implements No
     public NoBlankIntervalSet(IntervalSet<L> set, long maxTime) {
         super(set);
         this.maxTime = maxTime;
+        checkRep();
     }
 
 
