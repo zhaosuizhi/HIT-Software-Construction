@@ -1,8 +1,9 @@
 package adt;
 
 import adt.utl.IntervalSet;
-import adt.utl.NoBlankIntervalSet;
-import adt.utl.NonOverlapIntervalSet;
+import adt.utl.MultiIntervalSet;
+import adt.utl.NoBlankMultiIntervalSet;
+import adt.utl.NonOverlapMultiIntervalSet;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -16,7 +17,7 @@ import java.util.Set;
  */
 public class DutyIntervalSet<L> {
 
-    private final NoBlankIntervalSet<L> set; // 非空、无冲突的时间段集合
+    private final NoBlankMultiIntervalSet<L> set; // 非空、无冲突的时间段集合
     private final LocalDate startDate;
 
     // 抽象函数:
@@ -40,7 +41,7 @@ public class DutyIntervalSet<L> {
      */
     public DutyIntervalSet(LocalDate startDate, LocalDate endDate) {
         this.startDate = startDate;
-        set = new NoBlankIntervalSet<>(new NonOverlapIntervalSet<>(IntervalSet.empty()), date2offset(endDate));
+        set = new NoBlankMultiIntervalSet<>(new NonOverlapMultiIntervalSet<>(MultiIntervalSet.empty()), date2offset(endDate));
         checkRep();
     }
 
@@ -98,41 +99,20 @@ public class DutyIntervalSet<L> {
     }
 
     /**
-     * 获取一个员工对应的值班开始日期
-     *
-     * @param label 员工
-     * @return 开始日期
-     */
-    public LocalDate start(L label) {
-        long offset = set.start(label);
-        if (offset == -1)
-            return null;
-        else
-            return offset2date(offset);
-    }
-
-    /**
-     * 获取一个员工对应的值班结束日期
-     *
-     * @param label 员工
-     * @return 开始日期
-     */
-    public LocalDate end(L label) {
-        long offset = set.end(label);
-        if (offset == -1)
-            return null;
-        else
-            return offset2date(offset);
-    }
-
-    /**
      * 获取指定日期的员工
      *
      * @param date 日期
      * @return 对应日期的员工；不存在返回null
      */
     public L getEmployeeByDate(LocalDate date) {
-        return set.getLabelByTime(date2offset(date));
+        long offset = date2offset(date);
+
+        for (L label : set.labels()) {
+            IntervalSet<Integer> intervals = set.intervals(label);
+            if (intervals.getLabelByTime(offset) != null)
+                return label;
+        }
+        return null;
     }
 
     /**

@@ -31,7 +31,7 @@ public class DutyIntervalSetTest {
         Assert.assertTrue(set.add(
                 LocalDate.parse("2021-01-03"),
                 LocalDate.parse("2021-01-10"),
-                "c"
+                "a"
         ));
 
         Assert.assertEquals(0, set.unscheduledRate(), 0.001);

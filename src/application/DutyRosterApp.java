@@ -153,7 +153,7 @@ public class DutyRosterApp {
         if (dutySet.add(start, end, employee)) {
             System.out.println("排班成功。");
         } else {
-            System.out.println("已被安排过值班，排班失败！");
+            System.out.println("发生冲突，排班失败！");
         }
     }
 
