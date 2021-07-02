@@ -3,7 +3,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class CourseIntervalSetTest {
 
@@ -34,6 +37,9 @@ public class CourseIntervalSetTest {
         Assert.assertTrue(set.add(LocalDate.parse("2021-01-01"), 1, "a"));
         Assert.assertTrue(set.add(LocalDate.parse("2021-01-02"), 2, "a"));
 
+        // 插入冲突课程
+        Assert.assertFalse(set.add(LocalDate.parse("2021-01-02"), 2, "b"));
+
         // 插入非法课程
         Assert.assertThrows(IllegalArgumentException.class, () -> set.add(LocalDate.parse("2021-01-10"), 5, "a"));
         Assert.assertThrows(IllegalArgumentException.class, () -> set.add(LocalDate.parse("2021-01-10"), -1, "a"));
@@ -44,7 +50,7 @@ public class CourseIntervalSetTest {
         CourseIntervalSet<String> set = new CourseIntervalSet<>(LocalDate.parse("2021-01-01"), 10);
 
         set.add(LocalDate.parse("2021-01-03"), 0, "math");
-        set.add(LocalDate.parse("2021-01-03"), 0, "pe");
+        set.add(LocalDate.parse("2021-01-03"), 0, "pe"); // 因冲突而添加失败
         set.add(LocalDate.parse("2021-01-03"), 2, "computer");
         List<Set<String>> res;
 
@@ -56,7 +62,7 @@ public class CourseIntervalSetTest {
 
         res = set.getDateSchedule(LocalDate.parse("2021-01-03"));
         Assert.assertEquals(5, res.size());
-        Assert.assertEquals(new HashSet<>(Arrays.asList("math", "pe")), res.get(0));
+        Assert.assertEquals(new HashSet<>(Collections.singletonList("math")), res.get(0));
         Assert.assertTrue(res.get(1).isEmpty());
         Assert.assertEquals(new HashSet<>(Collections.singletonList("computer")), res.get(2));
         Assert.assertTrue(res.get(3).isEmpty());
@@ -86,7 +92,7 @@ public class CourseIntervalSetTest {
         Assert.assertEquals(0.0, set.overlapRate(), 0.001);
         set.add(LocalDate.parse("2021-01-01"), 2, "b");
         Assert.assertEquals(0.0, set.overlapRate(), 0.001);
-        set.add(LocalDate.parse("2021-01-01"), 1, "b");
-        Assert.assertEquals(2.857, set.overlapRate(), 0.001);
+        set.add(LocalDate.parse("2021-01-01"), 1, "b"); // 插入失败
+        Assert.assertEquals(0.0, set.overlapRate(), 0.001);
     }
 }

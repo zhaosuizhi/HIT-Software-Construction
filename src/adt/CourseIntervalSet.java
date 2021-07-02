@@ -3,6 +3,7 @@ package adt;
 import adt.utl.IntervalSet;
 import adt.utl.MultiIntervalSet;
 import adt.utl.NoBlankMultiIntervalSet;
+import adt.utl.NonOverlapMultiIntervalSet;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -29,6 +30,7 @@ public class CourseIntervalSet<L> {
     // 表示不变量:
     //   set != null
     //   startDate与endDate相差的天数 mod 7 == 6
+    //   每个时段最多只有1节课
     // 防止表示暴露:
     //   LocalDate是Immutable类型，不会发生表示暴露
     //   各方法返回值或者是新申请的对象、或者委托给set
@@ -36,6 +38,14 @@ public class CourseIntervalSet<L> {
     private void checkRep() {
         assert set != null;
         assert startDate.until(endDate, ChronoUnit.DAYS) % 7 == 6;
+
+        for (long i = 0; i < 7; i++) {
+            LocalDate date = startDate.plusDays(i);
+            List<Set<L>> daily = getDateSchedule(date);
+            assert daily.size() == 5;
+            for (Set<L> schedule : daily)
+                assert schedule.size() <= 1;
+        }
     }
 
     /**
@@ -58,7 +68,7 @@ public class CourseIntervalSet<L> {
             throw new IllegalArgumentException("总周数必须大于0！");
 
         // 每天最多5节课，每周有7天
-        set = new NoBlankMultiIntervalSet<>(MultiIntervalSet.empty(), 5 * 7 - 1);
+        set = new NoBlankMultiIntervalSet<>(new NonOverlapMultiIntervalSet<>(MultiIntervalSet.empty()), 5 * 7 - 1);
 
         this.startDate = startDate;
         this.endDate = startDate.plusDays(weekCNT * 7).minusDays(1); // 持续到最后一周周日

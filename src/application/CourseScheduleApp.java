@@ -118,19 +118,10 @@ public class CourseScheduleApp {
             return;
         }
 
-        /* 首先查看老师、教室是否存在冲突 */
         Set<Course> currentCourses = set.getDateSchedule(date).get(num); // 该时段的所有课程
-        for (Course current : currentCourses) {
-            if (current.equals(course)) {
-                System.out.println("该节课已被安排过此时间段！");
-                return;
-            } else if (current.getTeacher().equals(course.getTeacher())) {
-                System.out.println("教师在此时间段已经安排了课程！");
-                return;
-            } else if (current.getPlace().equals(course.getPlace())) {
-                System.out.println("地点在此时间段已被占用！");
-                return;
-            }
+        if (!currentCourses.isEmpty()) { // 有课程，冲突
+            System.out.println("该时段已有课程！");
+            return;
         }
 
         /* 无冲突，添加课程 */
