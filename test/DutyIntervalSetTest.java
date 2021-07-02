@@ -29,7 +29,7 @@ public class DutyIntervalSetTest {
                 "c"
         ));
 
-        Assert.assertTrue(set.checkFinished());
+        Assert.assertEquals(0, set.unscheduledRate(), 0.001);
     }
 
     @Test

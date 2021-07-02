@@ -2,6 +2,7 @@ package application;
 
 import adt.ProcessIntervalSet;
 import adt.utl.MultiIntervalSet;
+import io.RobustScanner;
 
 import java.util.*;
 
@@ -9,14 +10,14 @@ public class ProcessScheduleApp {
 
     private final ProcessIntervalSet<Process> pis = new ProcessIntervalSet<>(MultiIntervalSet.empty());
     private final Map<Process, Long> durationMap = new HashMap<>(); // 进程->运行时间的映射
-    private final Scanner scanner; // 输入流
+    private final RobustScanner scanner; // 健壮的输入流
     private int pc; // 程序计数器
     private Process currentProcess = null; // 当前运行进程
 
     /**
      * @param scanner 输入流
      */
-    public ProcessScheduleApp(Scanner scanner) {
+    public ProcessScheduleApp(RobustScanner scanner) {
         this.scanner = scanner;
     }
 
@@ -43,20 +44,18 @@ public class ProcessScheduleApp {
 
         System.out.print("请输入进程ID：");
         id = scanner.nextInt();
-        scanner.nextLine();
         if (getProcessById(id) != null) {
             System.out.println("ID重复！");
             return;
         }
 
         System.out.print("请输入进程名称：");
-        name = scanner.nextLine();
+        name = scanner.nextNotEmptyString("进程名称");
 
         System.out.print("请输入最小运行时间：");
         minLast = scanner.nextLong();
         System.out.print("请输入最大运行时间：");
         maxLast = scanner.nextLong();
-        scanner.nextLine();
 
         Process p = new Process(id, name, minLast, maxLast); // 创建进程
         durationMap.put(p, 0L);
@@ -137,10 +136,9 @@ public class ProcessScheduleApp {
     /**
      * 在控制台打印目录，并从输入流读取用户输入
      *
-     * @param scanner 输入流
      * @return 用户输入的编号；若不合法返回-1
      */
-    public int menu(Scanner scanner) {
+    public int menu() {
         System.out.println("1. 查看进程调度结果");
         if (pc == 0)
             System.out.println("2. 开始运行");
@@ -149,21 +147,16 @@ public class ProcessScheduleApp {
         System.out.println("3. 添加进程");
         System.out.println("0. 退出");
 
-        try {
-            return scanner.nextInt();
-        } catch (InputMismatchException e) {
-            scanner.nextLine();
-            return -1;
-        }
+        return scanner.nextInt();
     }
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        RobustScanner scanner = new RobustScanner(new Scanner(System.in));
 
         ProcessScheduleApp app = new ProcessScheduleApp(scanner);
 
         int num; // 操作编号
-        while ((num = app.menu(scanner)) != 0) {
+        while ((num = app.menu()) != 0) {
             try {
                 switch (num) {
                     case 1:

@@ -16,7 +16,7 @@ public class PeriodicMultiIntervalSet<L> extends MultiIntervalSetDecorator<L> {
      * @param set   时间段集合
      * @param delta 周期的长度
      */
-    protected PeriodicMultiIntervalSet(MultiIntervalSet<L> set, long delta) {
+    public PeriodicMultiIntervalSet(MultiIntervalSet<L> set, long delta) {
         super(set);
         this.delta = delta;
     }

@@ -120,20 +120,11 @@ public class DutyIntervalSet<L> {
     }
 
     /**
-     * 查看未排班的天数
+     * 统计未排班天数占总天数的比例
      *
-     * @return 未排班的天数
+     * @return 未排班比例
      */
-    public long countUnscheduledDate() {
-        return set.countBlank();
-    }
-
-    /**
-     * 检查排班是否完成
-     *
-     * @return 是否完成
-     */
-    public boolean checkFinished() {
-        return set.checkNoBlank();
+    public double unscheduledRate() {
+        return set.blankRate();
     }
 }

@@ -1,6 +1,7 @@
 package application;
 
 import adt.DutyIntervalSet;
+import io.RobustScanner;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -17,18 +18,18 @@ public class DutyRosterApp {
     Set<Employee> employeeSet; // 员工表
     LocalDate startDate; // 开始时间
     LocalDate endDate; // 结束时间
-    Scanner scanner; // 输入流
+    RobustScanner scanner; // 健壮的输入流
 
     /**
      * @param start 开始日期
      * @param end   结束日期
      */
-    public DutyRosterApp(LocalDate start, LocalDate end) {
-        dutySet = new DutyIntervalSet<>(start, end);
-        employeeSet = new HashSet<>();
-        startDate = start;
-        endDate = end;
-        scanner = new Scanner(System.in);
+    public DutyRosterApp(RobustScanner scanner, LocalDate start, LocalDate end) {
+        this.dutySet = new DutyIntervalSet<>(start, end);
+        this.employeeSet = new HashSet<>();
+        this.startDate = start;
+        this.endDate = end;
+        this.scanner = scanner;
     }
 
     /**
@@ -79,7 +80,7 @@ public class DutyRosterApp {
      * 添加员工
      */
     public void addEmployee() {
-        String name = scanner.nextLine();
+        String name = scanner.nextNotEmptyString("员工姓名");
         Employee employee = getEmployeeByName(name);
 
         if (employee != null) {
@@ -88,9 +89,9 @@ public class DutyRosterApp {
         }
 
         System.out.print("请输入员工职位：");
-        String job = scanner.nextLine();
+        String job = scanner.nextNotEmptyString("员工职位");
         System.out.print("请输入员工电话：");
-        String phone = scanner.nextLine();
+        String phone = scanner.nextNotEmptyString("员工电话");
 
         employeeSet.add(new Employee(name, job, phone));
         System.out.printf("员工“%s”添加成功。%n", name);
@@ -100,7 +101,7 @@ public class DutyRosterApp {
      * 移除员工
      */
     public void removeEmployee() {
-        String name = scanner.nextLine();
+        String name = scanner.nextNotEmptyString("员工姓名");
         Employee employee = getEmployeeByName(name);
 
         System.out.printf("员工“%s”", name);
@@ -123,12 +124,10 @@ public class DutyRosterApp {
         String input;
 
         System.out.print("请输入开始时间：");
-        input = scanner.nextLine();
-        start = LocalDate.parse(input);
+        start = scanner.nextDate();
 
         System.out.print("请输入结束时间：");
-        input = scanner.nextLine();
-        end = LocalDate.parse(input);
+        end = scanner.nextDate();
 
         if (start.isAfter(end)) {
             System.out.println("结束时间不能晚于开始时间！");
@@ -136,7 +135,7 @@ public class DutyRosterApp {
         }
 
         System.out.print("请输入员工姓名：");
-        input = scanner.nextLine();
+        input = scanner.nextNotEmptyString("员工姓名");
         Employee employee = getEmployeeByName(input);
         System.out.printf("员工“%s”", input);
 
@@ -158,7 +157,7 @@ public class DutyRosterApp {
     public void removeDuty() {
         String input;
 
-        input = scanner.nextLine();
+        input = scanner.nextNotEmptyString("员工姓名");
         Employee employee = getEmployeeByName(input);
         System.out.printf("员工“%s”", input);
 
@@ -207,11 +206,9 @@ public class DutyRosterApp {
      * 在控制台输出排班的完成率
      */
     public void finishRate() {
-        long blankCNT = dutySet.countUnscheduledDate();
-        long days = startDate.until(endDate, ChronoUnit.DAYS) + 1;
-        double rate = (double) (days - blankCNT) / days * 100;
-        System.out.printf("完成率%.2f%%，", rate);
-        if (blankCNT == 0)
+        double rate = dutySet.unscheduledRate();
+        System.out.printf("完成率%.2f%%，", 100 - rate);
+        if (rate == 0)
             System.out.println("已排班完成！");
         else
             System.out.println("排班未完成。");
@@ -272,10 +269,9 @@ public class DutyRosterApp {
     /**
      * 在控制台打印目录，并从输入流读取用户输入
      *
-     * @param scanner 输入流
      * @return 用户输入的编号；若不合法返回-1
      */
-    public static int menu(Scanner scanner) {
+    public int menu() {
         System.out.println("1. 查看当前排班信息");
         System.out.println("2. 添加排班");
         System.out.println("3. 删除排班");
@@ -284,33 +280,26 @@ public class DutyRosterApp {
         System.out.println("6. 随机生成排班表");
         System.out.println("0. 退出");
 
-        int choice;
-        try {
-            choice = scanner.nextInt();
-        } catch (InputMismatchException e) {
-            choice = -1;
-        }
-        scanner.nextLine();
-        return choice;
+        return scanner.nextInt();
     }
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        RobustScanner scanner = new RobustScanner(new Scanner(System.in));
         LocalDate startDate;
         LocalDate endDate;
 
         // 设定排班日期
         System.out.print("排班开始日期：");
-        startDate = LocalDate.parse(scanner.nextLine());
+        startDate = scanner.nextDate();
         System.out.print("排班结束日期：");
-        endDate = LocalDate.parse(scanner.nextLine());
+        endDate = scanner.nextDate();
 
         // 初始化APP
-        DutyRosterApp app = new DutyRosterApp(startDate, endDate);
+        DutyRosterApp app = new DutyRosterApp(scanner, startDate, endDate);
         System.out.println();
 
         int num; // 操作编号
-        while ((num = menu(scanner)) != 0) {
+        while ((num = app.menu()) != 0) {
             try {
                 switch (num) {
                     case 1:
