@@ -10,7 +10,7 @@ public class CourseScheduleApp {
 
     private final RobustScanner scanner; // 健壮的输入流
     private final CourseIntervalSet<Course> set; // 课表
-    private final Set<Course> courseSet; // 已添加的课
+    private final Map<Course, Integer> courseLeftMap; // ”已添加的课->剩余学时数“的映射
 
     /**
      * @param scanner   输入流
@@ -22,7 +22,7 @@ public class CourseScheduleApp {
         this.scanner = scanner;
 
         this.set = new CourseIntervalSet<>(startDate, weekCNT);
-        this.courseSet = new HashSet<>();
+        this.courseLeftMap = new HashMap<>();
     }
 
     /**
@@ -68,10 +68,11 @@ public class CourseScheduleApp {
      */
     void watchLeftCourses() {
         System.out.println("课程ID  课程名      教师名   上课地点  剩余学时数");
-        for (Course c : courseSet) {
-            if (c.hasHoursLeft()) {
+        for (Course c : courseLeftMap.keySet()) {
+            final long hoursLeft = courseLeftMap.get(c);
+            if (hoursLeft > 0) { // 有剩余学时数
                 System.out.printf("%-7d %-7s %-6s %-9s %d%n",
-                        c.getId(), c.getName(), c.getTeacher(), c.getPlace(), c.getHoursLeft()
+                        c.getId(), c.getName(), c.getTeacher(), c.getPlace(), hoursLeft
                 );
             }
         }
@@ -85,7 +86,7 @@ public class CourseScheduleApp {
         int id = scanner.nextInt();
 
         Course course = null; // 待安排的课程
-        for (Course c : courseSet) {
+        for (Course c : courseLeftMap.keySet()) {
             if (id == c.getId()) {
                 course = c;
                 break;
@@ -94,7 +95,10 @@ public class CourseScheduleApp {
         if (course == null) {
             System.out.println("该ID不存在！");
             return;
-        } else if (!course.hasHoursLeft()) {
+        }
+
+        final int hoursLeft = courseLeftMap.get(course); // 该课程当前剩余学时数
+        if (hoursLeft < 2) {
             System.out.println("课程剩余学时数不足！");
             return;
         }
@@ -132,7 +136,7 @@ public class CourseScheduleApp {
         /* 无冲突，添加课程 */
         boolean ret = set.add(date, num, course);
         assert ret;
-        course.scheduleOnce();
+        courseLeftMap.put(course, hoursLeft - 2); // 减少学时数
         System.out.println("安排成功。");
     }
 
@@ -146,7 +150,7 @@ public class CourseScheduleApp {
             System.out.println("ID必须>0！");
             return;
         }
-        for (Course c : courseSet) {
+        for (Course c : courseLeftMap.keySet()) {
             if (id == c.getId()) {
                 System.out.println("ID已存在！");
                 return;
@@ -177,7 +181,7 @@ public class CourseScheduleApp {
         }
 
         Course course = new Course(id, name, teacher, place, hours);
-        courseSet.add(course);
+        courseLeftMap.put(course, hours);
         System.out.println("课程添加成功。");
     }
 
@@ -253,14 +257,14 @@ public class CourseScheduleApp {
 
 /**
  * 一个课程
- * <p>Mutable
+ * <p>Immutable
  */
 class Course {
     private final int id; // 课程ID
     private final String name; // 课程名称
     private final String teacher; // 教师名字
     private final String place; // 地点
-    private int hours; // 剩余学时数
+    private final int hours; // 总学时数
 
     void checkRep() {
         assert id > 0;
@@ -324,33 +328,12 @@ class Course {
     }
 
     /**
-     * 获取课程剩余学时数
+     * 获取课程总学时数
      *
-     * @return 剩余学时数
+     * @return 总学时数
      */
-    public long getHoursLeft() {
+    public long getHours() {
         return hours;
-    }
-
-    /**
-     * 课程是否有剩余学时
-     */
-    public boolean hasHoursLeft() {
-        return hours > 0;
-    }
-
-    /**
-     * 安排2学时的课程，剩余学时数减2
-     *
-     * @return 是否安排成功；false说明无剩余学时
-     */
-    public boolean scheduleOnce() {
-        if (hours >= 2) {
-            hours -= 2;
-            checkRep();
-            return true;
-        } else
-            return false;
     }
 
     @Override
